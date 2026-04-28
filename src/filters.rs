@@ -181,10 +181,10 @@ impl PlayerSnapshot {
             saves: player.saves,
             touches: player.touches,
             demos: player.demos,
-            speed: player.speed,
-            boost: player.boost,
-            b_boosting: player.b_boosting,
-            b_supersonic: player.b_supersonic,
+            speed: player.effective_speed(),
+            boost: player.effective_boost(),
+            b_boosting: player.effective_boosting(),
+            b_supersonic: player.effective_supersonic(),
         }
     }
 }

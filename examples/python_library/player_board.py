@@ -43,6 +43,46 @@ def short_primary_id(value: Any) -> str:
     return value.split("|")[-1]
 
 
+def player_boost(player: dict[str, Any]) -> Any:
+    car = pick(player, "Car", "car", default={})
+    if not isinstance(car, dict):
+        car = {}
+    return pick(
+        player,
+        "Boost",
+        "boost",
+        "BoostAmount",
+        "boostAmount",
+        "boost_amount",
+        default=pick(car, "Boost", "boost", "BoostAmount", "boost_amount"),
+    )
+
+
+def player_speed(player: dict[str, Any]) -> Any:
+    car = pick(player, "Car", "car", default={})
+    if not isinstance(car, dict):
+        car = {}
+    return pick(
+        player,
+        "Speed",
+        "speed",
+        "CarSpeed",
+        "carSpeed",
+        "car_speed",
+        "Velocity",
+        "velocity",
+        default=pick(
+            car,
+            "Speed",
+            "speed",
+            "CarSpeed",
+            "car_speed",
+            "Velocity",
+            "velocity",
+        ),
+    )
+
+
 def team_score(teams: list[dict[str, Any]], team_num: int) -> int:
     for team in teams:
         if to_int(pick(team, "TeamNum", "team_num"), fallback=-1) == team_num:
@@ -109,8 +149,8 @@ def render_board(data: dict[str, Any]) -> None:
             f"{fmt_int(pick(player, 'Saves', 'saves')):>5} "
             f"{fmt_int(pick(player, 'Shots', 'shots')):>6} "
             f"{fmt_int(pick(player, 'Touches', 'touches')):>6} "
-            f"{fmt_int(pick(player, 'Boost', 'boost')):>6} "
-            f"{fmt_speed(pick(player, 'Speed', 'speed')):>7}\n"
+            f"{fmt_int(player_boost(player)):>6} "
+            f"{fmt_speed(player_speed(player)):>7}\n"
         )
 
     sys.stdout.flush()

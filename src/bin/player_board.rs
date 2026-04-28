@@ -169,8 +169,8 @@ fn render_state(
             fmt_opt_i64(player.saves),
             fmt_opt_i64(player.shots),
             fmt_opt_i64(player.touches),
-            fmt_opt_i64(player.boost),
-            fmt_opt_f64(player.speed)
+            fmt_opt_i64(player.effective_boost()),
+            fmt_opt_f64(player.effective_speed())
         )?;
     }
 

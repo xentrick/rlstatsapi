@@ -1,0 +1,46 @@
+[
+  {
+    "Event": "BallHit",
+    "Data": {
+      "MatchGuid": "1F7ED23011F1435166EBAB919DB5566D",
+      "Players": [
+        {
+          "Name": "Zone Killa",
+          "Shortcut": 5,
+          "TeamNum": 1
+        }
+      ],
+      "Ball": {
+        "PreHitSpeed": 68.06053161621094,
+        "PostHitSpeed": 77.35648345947266,
+        "Location": {
+          "X": 83.09001922607422,
+          "Y": -944.2150268554688,
+          "Z": 307.73712158203125
+        }
+      }
+    }
+  },
+  {
+    "Event": "BallHit",
+    "Data": {
+      "MatchGuid": "1F7ED23011F1435166EBAB919DB5566D",
+      "Players": [
+        {
+          "Name": "Zone Killa",
+          "Shortcut": 5,
+          "TeamNum": 1
+        }
+      ],
+      "Ball": {
+        "PreHitSpeed": 53.67415237426758,
+        "PostHitSpeed": 93.06432342529297,
+        "Location": {
+          "X": -49.54730224609375,
+          "Y": -1002.0059814453125,
+          "Z": 158.98916625976562
+        }
+      }
+    }
+  }
+]

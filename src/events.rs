@@ -472,6 +472,242 @@ pub struct UpdateStatePlayer {
     pub extra: HashMap<String, Value>,
 }
 
+impl UpdateStatePlayer {
+    pub fn effective_speed(&self) -> Option<f64> {
+        self.speed
+            .or_else(|| {
+                first_numeric_f64(
+                    &self.extra,
+                    &[
+                        "speed",
+                        "Speed",
+                        "CarSpeed",
+                        "carSpeed",
+                        "car_speed",
+                        "Velocity",
+                        "velocity",
+                        "Car.Speed",
+                        "car.speed",
+                    ],
+                )
+            })
+            .or_else(|| {
+                first_nested_numeric_f64(
+                    &self.extra,
+                    &[
+                        "Car",
+                        "car",
+                        "CarData",
+                        "carData",
+                        "car_data",
+                        "Vehicle",
+                        "vehicle",
+                    ],
+                    &[
+                        "Speed",
+                        "speed",
+                        "CarSpeed",
+                        "carSpeed",
+                        "car_speed",
+                        "Velocity",
+                        "velocity",
+                    ],
+                )
+            })
+    }
+
+    pub fn effective_boost(&self) -> Option<i64> {
+        self.boost
+            .or_else(|| {
+                first_numeric_i64(
+                    &self.extra,
+                    &[
+                        "boost",
+                        "Boost",
+                        "BoostAmount",
+                        "boostAmount",
+                        "boost_amount",
+                        "Car.Boost",
+                        "car.boost",
+                    ],
+                )
+            })
+            .or_else(|| {
+                first_nested_numeric_i64(
+                    &self.extra,
+                    &[
+                        "Car",
+                        "car",
+                        "CarData",
+                        "carData",
+                        "car_data",
+                        "Vehicle",
+                        "vehicle",
+                    ],
+                    &[
+                        "Boost",
+                        "boost",
+                        "BoostAmount",
+                        "boostAmount",
+                        "boost_amount",
+                    ],
+                )
+            })
+    }
+
+    pub fn effective_boosting(&self) -> Option<bool> {
+        self.b_boosting
+            .or_else(|| {
+                first_bool(
+                    &self.extra,
+                    &["bBoosting", "boosting", "isBoosting"],
+                )
+            })
+            .or_else(|| {
+                first_nested_bool(
+                    &self.extra,
+                    &[
+                        "Car",
+                        "car",
+                        "CarData",
+                        "carData",
+                        "car_data",
+                        "Vehicle",
+                        "vehicle",
+                    ],
+                    &["bBoosting", "boosting", "isBoosting"],
+                )
+            })
+    }
+
+    pub fn effective_supersonic(&self) -> Option<bool> {
+        self.b_supersonic
+            .or_else(|| {
+                first_bool(
+                    &self.extra,
+                    &["bSupersonic", "supersonic", "isSupersonic"],
+                )
+            })
+            .or_else(|| {
+                first_nested_bool(
+                    &self.extra,
+                    &[
+                        "Car",
+                        "car",
+                        "CarData",
+                        "carData",
+                        "car_data",
+                        "Vehicle",
+                        "vehicle",
+                    ],
+                    &["bSupersonic", "supersonic", "isSupersonic"],
+                )
+            })
+    }
+}
+
+fn first_numeric_f64(map: &HashMap<String, Value>, keys: &[&str]) -> Option<f64> {
+    keys.iter()
+        .find_map(|key| map.get(*key).and_then(value_as_f64))
+}
+
+fn first_numeric_i64(map: &HashMap<String, Value>, keys: &[&str]) -> Option<i64> {
+    keys.iter()
+        .find_map(|key| map.get(*key).and_then(value_as_i64))
+}
+
+fn first_nested_numeric_f64(
+    map: &HashMap<String, Value>,
+    container_keys: &[&str],
+    value_keys: &[&str],
+) -> Option<f64> {
+    container_keys.iter().find_map(|container_key| {
+        let Value::Object(object) = map.get(*container_key)? else {
+            return None;
+        };
+
+        value_keys
+            .iter()
+            .find_map(|value_key| object.get(*value_key).and_then(value_as_f64))
+    })
+}
+
+fn first_nested_numeric_i64(
+    map: &HashMap<String, Value>,
+    container_keys: &[&str],
+    value_keys: &[&str],
+) -> Option<i64> {
+    container_keys.iter().find_map(|container_key| {
+        let Value::Object(object) = map.get(*container_key)? else {
+            return None;
+        };
+
+        value_keys
+            .iter()
+            .find_map(|value_key| object.get(*value_key).and_then(value_as_i64))
+    })
+}
+
+fn first_bool(map: &HashMap<String, Value>, keys: &[&str]) -> Option<bool> {
+    keys.iter()
+        .find_map(|key| map.get(*key).and_then(value_as_bool))
+}
+
+fn first_nested_bool(
+    map: &HashMap<String, Value>,
+    container_keys: &[&str],
+    value_keys: &[&str],
+) -> Option<bool> {
+    container_keys.iter().find_map(|container_key| {
+        let Value::Object(object) = map.get(*container_key)? else {
+            return None;
+        };
+
+        value_keys
+            .iter()
+            .find_map(|value_key| object.get(*value_key).and_then(value_as_bool))
+    })
+}
+
+fn value_as_f64(value: &Value) -> Option<f64> {
+    match value {
+        Value::Number(number) => number
+            .as_f64()
+            .or_else(|| number.as_i64().map(|v| v as f64)),
+        Value::String(text) => text.parse::<f64>().ok(),
+        _ => None,
+    }
+}
+
+fn value_as_i64(value: &Value) -> Option<i64> {
+    match value {
+        Value::Number(number) => number
+            .as_i64()
+            .or_else(|| number.as_f64().map(|v| v.trunc() as i64)),
+        Value::String(text) => text
+            .parse::<i64>()
+            .ok()
+            .or_else(|| text.parse::<f64>().ok().map(|v| v.trunc() as i64)),
+        _ => None,
+    }
+}
+
+fn value_as_bool(value: &Value) -> Option<bool> {
+    match value {
+        Value::Bool(boolean) => Some(*boolean),
+        Value::Number(number) => number.as_i64().map(|v| v != 0),
+        Value::String(text) => {
+            let normalized = text.trim().to_ascii_lowercase();
+            match normalized.as_str() {
+                "true" | "1" | "yes" | "y" | "on" => Some(true),
+                "false" | "0" | "no" | "n" | "off" => Some(false),
+                _ => None,
+            }
+        }
+        _ => None,
+    }
+}
+
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct UpdateStateData {
     #[serde(rename = "MatchGuid", default)]

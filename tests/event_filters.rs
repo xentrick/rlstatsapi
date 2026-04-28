@@ -146,3 +146,67 @@ fn match_signal_helpers_detect_goals_and_match_end() {
 
     assert_eq!(winner_team_num(&ended), Some(1));
 }
+
+#[test]
+fn nested_car_payload_still_exposes_player_boost_and_speed() {
+    let update = parse(
+        "UpdateState",
+        json!({
+            "MatchGuid": "M77",
+            "Players": [
+                {
+                    "Name": "Local",
+                    "PrimaryId": "Steam|111|0",
+                    "TeamNum": 0,
+                    "Boost": 57,
+                    "Speed": 1450,
+                    "Score": 100
+                },
+                {
+                    "Name": "Remote",
+                    "PrimaryId": "Steam|222|0",
+                    "TeamNum": 1,
+                    "Score": 50,
+                    "Car": {
+                        "BoostAmount": 33,
+                        "CarSpeed": 1320,
+                        "bBoosting": true,
+                        "bSupersonic": false
+                    }
+                }
+            ],
+            "Game": {
+                "Frame": 400,
+                "TimeSeconds": 120,
+                "Teams": [
+                    {"TeamNum": 0, "Score": 1},
+                    {"TeamNum": 1, "Score": 1}
+                ]
+            }
+        }),
+    );
+
+    let StatsEvent::UpdateState(data) = &update else {
+        panic!("expected update state");
+    };
+
+    let remote = data
+        .players
+        .iter()
+        .find(|player| player.name.as_deref() == Some("Remote"))
+        .expect("remote player should be present");
+
+    assert_eq!(remote.boost, None);
+    assert_eq!(remote.speed, None);
+    assert_eq!(remote.effective_boost(), Some(33));
+    assert_eq!(remote.effective_speed(), Some(1320.0));
+    assert_eq!(remote.effective_boosting(), Some(true));
+    assert_eq!(remote.effective_supersonic(), Some(false));
+
+    let mut tracker = PlayerTracker::by_name("Remote");
+    let snapshot = tracker
+        .update_from_event(&update)
+        .expect("tracker should emit first snapshot");
+    assert_eq!(snapshot.boost, Some(33));
+    assert_eq!(snapshot.speed, Some(1320.0));
+}

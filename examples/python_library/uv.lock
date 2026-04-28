@@ -15,5 +15,5 @@ requires-dist = [{ name = "rlstatsapi", editable = "../../" }]
 
 [[package]]
 name = "rlstatsapi"
-version = "0.1.0"
+version = "0.1.1"
 source = { editable = "../../" }

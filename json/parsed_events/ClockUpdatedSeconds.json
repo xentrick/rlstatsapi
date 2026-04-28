@@ -1,0 +1,18 @@
+[
+  {
+    "Event": "ClockUpdatedSeconds",
+    "Data": {
+      "MatchGuid": "1F7ED23011F1435166EBAB919DB5566D",
+      "TimeSeconds": 80,
+      "bOvertime": false
+    }
+  },
+  {
+    "Event": "ClockUpdatedSeconds",
+    "Data": {
+      "MatchGuid": "1F7ED23011F1435166EBAB919DB5566D",
+      "TimeSeconds": 79,
+      "bOvertime": false
+    }
+  }
+]
