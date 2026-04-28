@@ -1,6 +1,5 @@
 # rlstatsapi
 
-[![ci](https://img.shields.io/github/actions/workflow/status/xentrick/rlstatsapi/ci.yml?branch=main&label=ci)](https://github.com/xentrick/rlstatsapi/actions/workflows/ci.yml)
 [![docs](https://img.shields.io/docsrs/rlstatsapi?label=docs)](https://docs.rs/rlstatsapi)
 [![crates.io](https://img.shields.io/crates/v/rlstatsapi)](https://crates.io/crates/rlstatsapi)
 
@@ -49,12 +48,12 @@ cargo run --bin raw_events -- --ini /path/to/DefaultStatsAPI.ini
 cargo run --bin tick_listener
 ```
 
-### 3) Pretty event listener with filters
+### 3) RL event listener with filters
 
 ```bash
-cargo run --bin pretty_events -- --help
-cargo run --bin pretty_events -- --list-events
-cargo run --bin pretty_events -- --event goal
+cargo run --bin rl_events -- --help
+cargo run --bin rl_events -- --list-events
+cargo run --bin rl_events -- --event goal
 ```
 
 ### 4) Live player board (in-place console updates)
