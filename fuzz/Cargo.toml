@@ -1,0 +1,29 @@
+[package]
+name = "rlstatsapi-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2024"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+serde_json = "1.0"
+
+[dependencies.rlstatsapi]
+path = ".."
+
+[[bin]]
+name = "parse_stats_event"
+path = "fuzz_targets/parse_stats_event.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "event_envelope_value"
+path = "fuzz_targets/event_envelope_value.rs"
+test = false
+doc = false
+bench = false

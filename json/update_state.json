@@ -1,0 +1,33 @@
+{
+  "Event": "UpdateState",
+  "Data": {
+    "MatchGuid": "BBB5BF0E11F14330BC11EB9AAF19E2AD",
+    "Players": [],
+    "Game": {
+      "Teams": [
+        {
+          "Name": "Blue",
+          "TeamNum": 0,
+          "Score": 0,
+          "ColorPrimary": "1873FF",
+          "ColorSecondary": "E5E5E5"
+        },
+        {
+          "Name": "Orange",
+          "TeamNum": 1,
+          "Score": 0,
+          "ColorPrimary": "C26418",
+          "ColorSecondary": "E5E5E5"
+        }
+      ],
+      "TimeSeconds": 300,
+      "bOvertime": false,
+      "Ball": { "Speed": 0.0, "TeamNum": 255 },
+      "bReplay": false,
+      "bHasWinner": false,
+      "Winner": "",
+      "Arena": "cs_p",
+      "bHasTarget": false
+    }
+  }
+}
