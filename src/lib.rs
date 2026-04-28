@@ -2,6 +2,8 @@ pub mod client;
 pub mod config;
 pub mod error;
 pub mod events;
+#[cfg(feature = "python")]
+mod python_bindings;
 
 pub use client::RocketLeagueStatsClient;
 pub use config::{
@@ -12,4 +14,5 @@ pub use config::{
 pub use error::RlStatsError;
 pub use events::{
     EventEnvelope, StatsEvent, parse_stats_event, parse_stats_event_value,
+    stats_event_name, stats_event_to_value,
 };

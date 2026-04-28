@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
+use serde_json::{Value, json};
 
 use crate::error::RlStatsError;
 
@@ -41,6 +41,99 @@ pub enum StatsEvent {
 pub struct UnknownEvent {
     pub event: String,
     pub data: Value,
+}
+
+pub fn stats_event_name(event: &StatsEvent) -> &'static str {
+    match event {
+        StatsEvent::UpdateState(_) => "UpdateState",
+        StatsEvent::BallHit(_) => "BallHit",
+        StatsEvent::ClockUpdatedSeconds(_) => "ClockUpdatedSeconds",
+        StatsEvent::CountdownBegin(_) => "CountdownBegin",
+        StatsEvent::CrossbarHit(_) => "CrossbarHit",
+        StatsEvent::GoalReplayEnd(_) => "GoalReplayEnd",
+        StatsEvent::GoalReplayStart(_) => "GoalReplayStart",
+        StatsEvent::GoalReplayWillEnd(_) => "GoalReplayWillEnd",
+        StatsEvent::GoalScored(_) => "GoalScored",
+        StatsEvent::MatchCreated(_) => "MatchCreated",
+        StatsEvent::MatchInitialized(_) => "MatchInitialized",
+        StatsEvent::MatchDestroyed(_) => "MatchDestroyed",
+        StatsEvent::MatchEnded(_) => "MatchEnded",
+        StatsEvent::MatchPaused(_) => "MatchPaused",
+        StatsEvent::MatchUnpaused(_) => "MatchUnpaused",
+        StatsEvent::PodiumStart(_) => "PodiumStart",
+        StatsEvent::ReplayCreated(_) => "ReplayCreated",
+        StatsEvent::RoundStarted(_) => "RoundStarted",
+        StatsEvent::StatfeedEvent(_) => "StatfeedEvent",
+        StatsEvent::Unknown(_) => "Unknown",
+    }
+}
+
+pub fn stats_event_to_value(event: &StatsEvent) -> Result<Value, RlStatsError> {
+    let value = match event {
+        StatsEvent::UpdateState(data) => {
+            json!({"event": "UpdateState", "data": data})
+        }
+        StatsEvent::BallHit(data) => {
+            json!({"event": "BallHit", "data": data})
+        }
+        StatsEvent::ClockUpdatedSeconds(data) => {
+            json!({"event": "ClockUpdatedSeconds", "data": data})
+        }
+        StatsEvent::CountdownBegin(data) => {
+            json!({"event": "CountdownBegin", "data": data})
+        }
+        StatsEvent::CrossbarHit(data) => {
+            json!({"event": "CrossbarHit", "data": data})
+        }
+        StatsEvent::GoalReplayEnd(data) => {
+            json!({"event": "GoalReplayEnd", "data": data})
+        }
+        StatsEvent::GoalReplayStart(data) => {
+            json!({"event": "GoalReplayStart", "data": data})
+        }
+        StatsEvent::GoalReplayWillEnd(data) => {
+            json!({"event": "GoalReplayWillEnd", "data": data})
+        }
+        StatsEvent::GoalScored(data) => {
+            json!({"event": "GoalScored", "data": data})
+        }
+        StatsEvent::MatchCreated(data) => {
+            json!({"event": "MatchCreated", "data": data})
+        }
+        StatsEvent::MatchInitialized(data) => {
+            json!({"event": "MatchInitialized", "data": data})
+        }
+        StatsEvent::MatchDestroyed(data) => {
+            json!({"event": "MatchDestroyed", "data": data})
+        }
+        StatsEvent::MatchEnded(data) => {
+            json!({"event": "MatchEnded", "data": data})
+        }
+        StatsEvent::MatchPaused(data) => {
+            json!({"event": "MatchPaused", "data": data})
+        }
+        StatsEvent::MatchUnpaused(data) => {
+            json!({"event": "MatchUnpaused", "data": data})
+        }
+        StatsEvent::PodiumStart(data) => {
+            json!({"event": "PodiumStart", "data": data})
+        }
+        StatsEvent::ReplayCreated(data) => {
+            json!({"event": "ReplayCreated", "data": data})
+        }
+        StatsEvent::RoundStarted(data) => {
+            json!({"event": "RoundStarted", "data": data})
+        }
+        StatsEvent::StatfeedEvent(data) => {
+            json!({"event": "StatfeedEvent", "data": data})
+        }
+        StatsEvent::Unknown(data) => json!({
+            "event": data.event,
+            "data": data.data,
+        }),
+    };
+
+    Ok(value)
 }
 
 pub fn parse_stats_event(input: &str) -> Result<StatsEvent, RlStatsError> {
