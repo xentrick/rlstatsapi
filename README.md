@@ -1,5 +1,9 @@
 # rlstatsapi
 
+[![ci](https://img.shields.io/github/actions/workflow/status/xentrick/rlstatsapi/ci.yml?branch=main&label=ci)](https://github.com/xentrick/rlstatsapi/actions/workflows/ci.yml)
+[![docs](https://img.shields.io/docsrs/rlstatsapi?label=docs)](https://docs.rs/rlstatsapi)
+[![crates.io](https://img.shields.io/crates/v/rlstatsapi)](https://crates.io/crates/rlstatsapi)
+
 Rust client and parser for Rocket League Stats API event streams over TCP, with optional Python bindings via PyO3.
 
 ## What This Project Includes
