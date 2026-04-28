@@ -10,6 +10,7 @@ use crate::config::{
 };
 use crate::error::RlStatsError;
 use crate::events::{StatsEvent, parse_stats_event_value};
+use crate::filters::EventFilter;
 
 pub struct RocketLeagueStatsClient {
     reader: OwnedReadHalf,
@@ -81,6 +82,22 @@ impl RocketLeagueStatsClient {
         }
     }
 
+    pub async fn next_filtered_event(
+        &mut self,
+        filter: &EventFilter,
+    ) -> Result<Option<StatsEvent>, RlStatsError> {
+        loop {
+            match self.next_event().await? {
+                Some(event) => {
+                    if filter.matches(&event) {
+                        return Ok(Some(event));
+                    }
+                }
+                None => return Ok(None),
+            }
+        }
+    }
+
     fn try_parse_event_from_buffer(
         &mut self,
     ) -> Result<Option<StatsEvent>, RlStatsError> {
@@ -113,6 +130,25 @@ impl RocketLeagueStatsClient {
                 Ok(Some(event)) => Some((Ok(event), client)),
                 Ok(None) => None,
                 Err(error) => Some((Err(error), client)),
+            }
+        })
+    }
+
+    pub fn into_filtered_event_stream(
+        self,
+        filter: EventFilter,
+    ) -> impl Stream<Item = Result<StatsEvent, RlStatsError>> {
+        futures_util::stream::unfold((self, filter), |(mut client, filter)| async move {
+            loop {
+                match client.next_event().await {
+                    Ok(Some(event)) => {
+                        if filter.matches(&event) {
+                            return Some((Ok(event), (client, filter)));
+                        }
+                    }
+                    Ok(None) => return None,
+                    Err(error) => return Some((Err(error), (client, filter))),
+                }
             }
         })
     }

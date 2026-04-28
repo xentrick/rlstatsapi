@@ -6,6 +6,7 @@ Rust client and parser for Rocket League Stats API event streams over TCP, with 
 
 - TCP client with reconnect support for Rocket League Stats API events.
 - Typed event parsing (`StatsEvent`) with support for unknown/forward-compatible events.
+- Event filtering and player/match tracking helpers (`EventFilter`, `PlayerTracker`, `MatchSignal`).
 - Config helpers for optional Stats API INI handling.
 - CLI binaries for raw, compact tick, and pretty filtered output.
 - Optional Python extension module (`rlstatsapi`) behind the `python` Cargo feature.
@@ -52,6 +53,12 @@ cargo run --bin pretty_events -- --list-events
 cargo run --bin pretty_events -- --event goal
 ```
 
+### 4) Live player board (in-place console updates)
+
+```bash
+cargo run --bin player_board
+```
+
 ## Default Connection and INI Behavior
 
 - If you do not pass an INI path, the client uses localhost defaults (`127.0.0.1:49123`) and does not edit an INI file.
@@ -81,6 +88,15 @@ cargo check --features python
 
 Package metadata for Python builds is defined in `pyproject.toml`.
 
+Filtering helpers are exposed for Python users as well, including:
+
+- `RocketLeagueStatsClient.next_filtered_event_json(...)`
+- `rlstatsapi.list_event_kinds()`
+- `rlstatsapi.event_matches(...)`
+- `rlstatsapi.filter_event_json(...)`
+- `rlstatsapi.match_signal_json(...)`
+- `rlstatsapi.winner_team(...)`
+
 ## Example Python Library
 
 A working Python consumer package is included at:
@@ -92,7 +108,17 @@ Run it with `uv`:
 ```bash
 cd examples/python_library
 uv sync
-uv run demo.py
+uv run stream_events.py
+```
+
+Additional examples:
+
+```bash
+uv run filtered_stream_events.py
+uv run goal_scored_events.py
+uv run player_watch.py
+uv run player_board.py
+uv run verify_filter_bindings.py
 ```
 
 ## Library Usage (Rust)

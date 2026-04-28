@@ -2,6 +2,7 @@ pub mod client;
 pub mod config;
 pub mod error;
 pub mod events;
+pub mod filters;
 #[cfg(feature = "python")]
 mod python_bindings;
 
@@ -15,4 +16,8 @@ pub use error::RlStatsError;
 pub use events::{
     EventEnvelope, StatsEvent, parse_stats_event, parse_stats_event_value,
     stats_event_name, stats_event_to_value,
+};
+pub use filters::{
+    EventFilter, EventKind, MatchSignal, PlayerSnapshot, PlayerTracker,
+    to_match_signal, winner_team_num,
 };

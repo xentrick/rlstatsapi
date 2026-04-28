@@ -20,6 +20,12 @@ class ParsedEvent:
     data: dict[str, Any]
 
 
+@dataclass(frozen=True)
+class ParsedMatchSignal:
+    signal: str
+    data: dict[str, Any]
+
+
 class RLStatsStream:
     def __init__(
         self,
@@ -48,6 +54,25 @@ class RLStatsStream:
             return None
         return self.parse_event(raw)
 
+    def next_filtered_event(
+        self,
+        event_types: list[str] | None = None,
+        player_name: str | None = None,
+        player_primary_id: str | None = None,
+        team_num: int | None = None,
+        match_guid: str | None = None,
+    ) -> ParsedEvent | None:
+        raw = self._client.next_filtered_event_json(
+            event_types=event_types,
+            player_name=player_name,
+            player_primary_id=player_primary_id,
+            team_num=team_num,
+            match_guid=match_guid,
+        )
+        if raw is None:
+            return None
+        return self.parse_event(raw)
+
     def iter_events(self, limit: int | None = None) -> Iterator[ParsedEvent]:
         seen = 0
         while True:
@@ -59,8 +84,88 @@ class RLStatsStream:
             if limit is not None and seen >= limit:
                 break
 
+    def iter_filtered_events(
+        self,
+        event_types: list[str] | None = None,
+        player_name: str | None = None,
+        player_primary_id: str | None = None,
+        team_num: int | None = None,
+        match_guid: str | None = None,
+        limit: int | None = None,
+    ) -> Iterator[ParsedEvent]:
+        seen = 0
+        while True:
+            event = self.next_filtered_event(
+                event_types=event_types,
+                player_name=player_name,
+                player_primary_id=player_primary_id,
+                team_num=team_num,
+                match_guid=match_guid,
+            )
+            if event is None:
+                break
+
+            yield event
+            seen += 1
+            if limit is not None and seen >= limit:
+                break
+
     @staticmethod
     def parse_event(raw_json: str) -> ParsedEvent:
         normalized = rlstatsapi.parse_event_json(raw_json)
         payload = json.loads(normalized)
         return ParsedEvent(event=payload["event"], data=payload["data"])
+
+    @staticmethod
+    def event_matches(
+        raw_json: str,
+        event_types: list[str] | None = None,
+        player_name: str | None = None,
+        player_primary_id: str | None = None,
+        team_num: int | None = None,
+        match_guid: str | None = None,
+    ) -> bool:
+        return rlstatsapi.event_matches(
+            raw_json,
+            event_types=event_types,
+            player_name=player_name,
+            player_primary_id=player_primary_id,
+            team_num=team_num,
+            match_guid=match_guid,
+        )
+
+    @staticmethod
+    def filter_event(
+        raw_json: str,
+        event_types: list[str] | None = None,
+        player_name: str | None = None,
+        player_primary_id: str | None = None,
+        team_num: int | None = None,
+        match_guid: str | None = None,
+    ) -> ParsedEvent | None:
+        normalized = rlstatsapi.filter_event_json(
+            raw_json,
+            event_types=event_types,
+            player_name=player_name,
+            player_primary_id=player_primary_id,
+            team_num=team_num,
+            match_guid=match_guid,
+        )
+        if normalized is None:
+            return None
+
+        payload = json.loads(normalized)
+        return ParsedEvent(event=payload["event"], data=payload["data"])
+
+    @staticmethod
+    def match_signal(raw_json: str) -> ParsedMatchSignal | None:
+        normalized = rlstatsapi.match_signal_json(raw_json)
+        if normalized is None:
+            return None
+
+        payload = json.loads(normalized)
+        return ParsedMatchSignal(signal=payload["signal"], data=payload["data"])
+
+    @staticmethod
+    def winner_team(raw_json: str) -> int | None:
+        return rlstatsapi.winner_team(raw_json)

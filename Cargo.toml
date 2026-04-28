@@ -2,6 +2,33 @@
 name = "rlstatsapi"
 version = "0.1.0"
 edition = "2024"
+description = "Rocket League Stats API TCP client, parser, and optional Python bindings"
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/xentrick/rlstatsapi"
+homepage = "https://github.com/xentrick/rlstatsapi"
+documentation = "https://docs.rs/rlstatsapi"
+keywords = ["rocket-league", "stats", "events", "tcp", "pyo3"]
+categories = [
+    "api-bindings",
+    "network-programming",
+    "parser-implementations",
+    "game-development",
+]
+rust-version = "1.85"
+exclude = [
+    ".env",
+    ".env.*",
+    ".venv/**",
+    ".mypy_cache/**",
+    "target/**",
+    "fuzz/**",
+    "examples/**",
+    "json/**",
+    "pyproject.toml",
+    "uv.lock",
+    "test.py",
+]
 
 [lib]
 crate-type = ["rlib", "cdylib"]

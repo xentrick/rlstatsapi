@@ -1,3 +1,3 @@
-from .client import ParsedEvent, RLStatsStream
+from .client import ParsedEvent, ParsedMatchSignal, RLStatsStream
 
-__all__ = ["ParsedEvent", "RLStatsStream"]
+__all__ = ["ParsedEvent", "ParsedMatchSignal", "RLStatsStream"]
