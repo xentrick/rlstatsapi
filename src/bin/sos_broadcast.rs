@@ -83,12 +83,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         options.port_override = Some(port);
     }
 
+    let requested_host =
+        cli.rl_host.as_deref().unwrap_or("127.0.0.1");
+    let requested_port = cli.rl_port.unwrap_or(49123);
+    eprintln!(
+        "Connecting to RL Stats API at {requested_host}:{requested_port}..."
+    );
+
     let mut client = RocketLeagueStatsClient::connect_with_retry(
         options,
         20,
         Duration::from_millis(250),
     )
     .await?;
+
+    eprintln!(
+        "Connected to RL Stats API at {}",
+        client.connection().socket_address()
+    );
 
     let bind_address = format!("{}:{}", cli.ws_host, cli.ws_port);
     let listener = TcpListener::bind(&bind_address).await?;
@@ -349,6 +361,7 @@ async fn reconnect_rl_with_backoff(
     let mut last_error: Option<Box<dyn std::error::Error>> = None;
 
     for attempt in 1..=10 {
+        eprintln!("Reconnecting to RL Stats API (attempt {attempt}/10)...");
         debug_log(
             cli,
             format!("attempting RL reconnect (attempt {attempt}/10)"),
@@ -356,6 +369,10 @@ async fn reconnect_rl_with_backoff(
 
         match client.reconnect().await {
             Ok(()) => {
+                eprintln!(
+                    "Reconnected to RL Stats API at {}",
+                    client.connection().socket_address()
+                );
                 debug_log(
                     cli,
                     format!(
