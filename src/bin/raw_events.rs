@@ -35,7 +35,9 @@ fn parse_ini_arg() -> Result<Option<PathBuf>, String> {
                 ini_path = Some(PathBuf::from(value));
             }
             "-h" | "--help" => {
-                println!("Usage: raw_events [--ini <path>]\n\nIf --ini is omitted, uses 127.0.0.1:49123 without INI edits.");
+                println!(
+                    "Usage: raw_events [--ini <path>]\n\nIf --ini is omitted, uses 127.0.0.1:49123 without INI edits."
+                );
                 std::process::exit(0);
             }
             other => {

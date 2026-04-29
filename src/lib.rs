@@ -3,9 +3,9 @@ pub mod config;
 pub mod error;
 pub mod events;
 pub mod filters;
-pub mod sos;
 #[cfg(feature = "python")]
 mod python_bindings;
+pub mod sos;
 
 pub use client::RocketLeagueStatsClient;
 pub use config::{
@@ -22,4 +22,6 @@ pub use filters::{
     EventFilter, EventKind, MatchSignal, PlayerSnapshot, PlayerTracker,
     to_match_signal, winner_team_num,
 };
-pub use sos::{SOS_VERSION, SosEnvelope, sos_version_envelope, translate_stats_event};
+pub use sos::{
+    SOS_VERSION, SosEnvelope, sos_version_envelope, translate_stats_event,
+};

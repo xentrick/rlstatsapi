@@ -181,15 +181,19 @@ fn ensure_ini_file_exists(path: &Path) -> Result<(), RlStatsError> {
     }
 
     if let Some(parent) = path.parent() {
-        fs::create_dir_all(parent).map_err(|source| RlStatsError::ConfigIo {
-            path: parent.display().to_string(),
-            source,
+        fs::create_dir_all(parent).map_err(|source| {
+            RlStatsError::ConfigIo {
+                path: parent.display().to_string(),
+                source,
+            }
         })?;
     }
 
-    fs::write(path, DEFAULT_INI_TEMPLATE).map_err(|source| RlStatsError::ConfigIo {
-        path: path.display().to_string(),
-        source,
+    fs::write(path, DEFAULT_INI_TEMPLATE).map_err(|source| {
+        RlStatsError::ConfigIo {
+            path: path.display().to_string(),
+            source,
+        }
     })
 }
 

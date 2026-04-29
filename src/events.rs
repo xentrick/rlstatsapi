@@ -141,7 +141,9 @@ pub fn parse_stats_event(input: &str) -> Result<StatsEvent, RlStatsError> {
     parse_event_envelope(envelope)
 }
 
-pub fn parse_stats_event_value(value: Value) -> Result<StatsEvent, RlStatsError> {
+pub fn parse_stats_event_value(
+    value: Value,
+) -> Result<StatsEvent, RlStatsError> {
     let envelope: EventEnvelope<Value> = serde_json::from_value(value)?;
     parse_event_envelope(envelope)
 }
@@ -152,33 +154,25 @@ fn parse_event_envelope(
     let data = normalize_event_data(envelope.data)?;
 
     let event = match envelope.event.as_str() {
-        "UpdateState" => {
-            StatsEvent::UpdateState(serde_json::from_value(data)?)
+        "UpdateState" => StatsEvent::UpdateState(serde_json::from_value(data)?),
+        "BallHit" => StatsEvent::BallHit(serde_json::from_value(data)?),
+        "ClockUpdatedSeconds" => {
+            StatsEvent::ClockUpdatedSeconds(serde_json::from_value(data)?)
         }
-        "BallHit" => {
-            StatsEvent::BallHit(serde_json::from_value(data)?)
-        }
-        "ClockUpdatedSeconds" => StatsEvent::ClockUpdatedSeconds(
-            serde_json::from_value(data)?,
-        ),
         "CountdownBegin" => {
             StatsEvent::CountdownBegin(serde_json::from_value(data)?)
         }
-        "CrossbarHit" => {
-            StatsEvent::CrossbarHit(serde_json::from_value(data)?)
-        }
+        "CrossbarHit" => StatsEvent::CrossbarHit(serde_json::from_value(data)?),
         "GoalReplayEnd" => {
             StatsEvent::GoalReplayEnd(serde_json::from_value(data)?)
         }
         "GoalReplayStart" => {
             StatsEvent::GoalReplayStart(serde_json::from_value(data)?)
         }
-        "GoalReplayWillEnd" => StatsEvent::GoalReplayWillEnd(
-            serde_json::from_value(data)?,
-        ),
-        "GoalScored" => {
-            StatsEvent::GoalScored(serde_json::from_value(data)?)
+        "GoalReplayWillEnd" => {
+            StatsEvent::GoalReplayWillEnd(serde_json::from_value(data)?)
         }
+        "GoalScored" => StatsEvent::GoalScored(serde_json::from_value(data)?),
         "MatchCreated" => {
             StatsEvent::MatchCreated(serde_json::from_value(data)?)
         }
@@ -188,18 +182,12 @@ fn parse_event_envelope(
         "MatchDestroyed" => {
             StatsEvent::MatchDestroyed(serde_json::from_value(data)?)
         }
-        "MatchEnded" => {
-            StatsEvent::MatchEnded(serde_json::from_value(data)?)
-        }
-        "MatchPaused" => {
-            StatsEvent::MatchPaused(serde_json::from_value(data)?)
-        }
+        "MatchEnded" => StatsEvent::MatchEnded(serde_json::from_value(data)?),
+        "MatchPaused" => StatsEvent::MatchPaused(serde_json::from_value(data)?),
         "MatchUnpaused" => {
             StatsEvent::MatchUnpaused(serde_json::from_value(data)?)
         }
-        "PodiumStart" => {
-            StatsEvent::PodiumStart(serde_json::from_value(data)?)
-        }
+        "PodiumStart" => StatsEvent::PodiumStart(serde_json::from_value(data)?),
         "ReplayCreated" => {
             StatsEvent::ReplayCreated(serde_json::from_value(data)?)
         }
@@ -495,13 +483,8 @@ impl UpdateStatePlayer {
                 first_nested_numeric_f64(
                     &self.extra,
                     &[
-                        "Car",
-                        "car",
-                        "CarData",
-                        "carData",
-                        "car_data",
-                        "Vehicle",
-                        "vehicle",
+                        "Car", "car", "CarData", "carData", "car_data",
+                        "Vehicle", "vehicle",
                     ],
                     &[
                         "Speed",
@@ -536,13 +519,8 @@ impl UpdateStatePlayer {
                 first_nested_numeric_i64(
                     &self.extra,
                     &[
-                        "Car",
-                        "car",
-                        "CarData",
-                        "carData",
-                        "car_data",
-                        "Vehicle",
-                        "vehicle",
+                        "Car", "car", "CarData", "carData", "car_data",
+                        "Vehicle", "vehicle",
                     ],
                     &[
                         "Boost",
@@ -567,13 +545,8 @@ impl UpdateStatePlayer {
                 first_nested_bool(
                     &self.extra,
                     &[
-                        "Car",
-                        "car",
-                        "CarData",
-                        "carData",
-                        "car_data",
-                        "Vehicle",
-                        "vehicle",
+                        "Car", "car", "CarData", "carData", "car_data",
+                        "Vehicle", "vehicle",
                     ],
                     &["bBoosting", "boosting", "isBoosting"],
                 )
@@ -592,13 +565,8 @@ impl UpdateStatePlayer {
                 first_nested_bool(
                     &self.extra,
                     &[
-                        "Car",
-                        "car",
-                        "CarData",
-                        "carData",
-                        "car_data",
-                        "Vehicle",
-                        "vehicle",
+                        "Car", "car", "CarData", "carData", "car_data",
+                        "Vehicle", "vehicle",
                     ],
                     &["bSupersonic", "supersonic", "isSupersonic"],
                 )
@@ -606,12 +574,18 @@ impl UpdateStatePlayer {
     }
 }
 
-fn first_numeric_f64(map: &HashMap<String, Value>, keys: &[&str]) -> Option<f64> {
+fn first_numeric_f64(
+    map: &HashMap<String, Value>,
+    keys: &[&str],
+) -> Option<f64> {
     keys.iter()
         .find_map(|key| map.get(*key).and_then(value_as_f64))
 }
 
-fn first_numeric_i64(map: &HashMap<String, Value>, keys: &[&str]) -> Option<i64> {
+fn first_numeric_i64(
+    map: &HashMap<String, Value>,
+    keys: &[&str],
+) -> Option<i64> {
     keys.iter()
         .find_map(|key| map.get(*key).and_then(value_as_i64))
 }
@@ -663,9 +637,9 @@ fn first_nested_bool(
             return None;
         };
 
-        value_keys
-            .iter()
-            .find_map(|value_key| object.get(*value_key).and_then(value_as_bool))
+        value_keys.iter().find_map(|value_key| {
+            object.get(*value_key).and_then(value_as_bool)
+        })
     })
 }
 

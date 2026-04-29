@@ -22,10 +22,7 @@ async fn spawn_server(events: Vec<&'static str>) -> (u16, JoinHandle<()>) {
                 .write_all(event.as_bytes())
                 .await
                 .expect("send event payload");
-            stream
-                .write_all(b"\n")
-                .await
-                .expect("send event separator");
+            stream.write_all(b"\n").await.expect("send event separator");
         }
     });
 
@@ -46,9 +43,10 @@ async fn next_event_reads_text_frames_and_ends_on_close() {
     let payload = r#"{"Event":"ClockUpdatedSeconds","Data":{"TimeSeconds":321,"bOvertime":false}}"#;
     let (port, server_handle) = spawn_server(vec![payload]).await;
 
-    let mut client = RocketLeagueStatsClient::connect(test_options_for_port(port))
-        .await
-        .expect("connect client");
+    let mut client =
+        RocketLeagueStatsClient::connect(test_options_for_port(port))
+            .await
+            .expect("connect client");
 
     assert_eq!(
         client.connection().socket_address(),
@@ -97,9 +95,10 @@ async fn next_event_reads_concatenated_json_without_newlines() {
             .expect("send concatenated payload");
     });
 
-    let mut client = RocketLeagueStatsClient::connect(test_options_for_port(port))
-        .await
-        .expect("connect client");
+    let mut client =
+        RocketLeagueStatsClient::connect(test_options_for_port(port))
+            .await
+            .expect("connect client");
 
     let e1 = client
         .next_event()
@@ -123,9 +122,10 @@ async fn next_event_reads_binary_frames() {
     let payload = r#"{"Event":"MatchEnded","Data":{"WinnerTeamNum":1}}"#;
     let (port, server_handle) = spawn_server(vec![payload]).await;
 
-    let mut client = RocketLeagueStatsClient::connect(test_options_for_port(port))
-        .await
-        .expect("connect client");
+    let mut client =
+        RocketLeagueStatsClient::connect(test_options_for_port(port))
+            .await
+            .expect("connect client");
 
     let event = client
         .next_event()

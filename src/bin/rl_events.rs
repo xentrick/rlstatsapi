@@ -261,12 +261,7 @@ fn print_pretty_event(event: &StatsEvent) {
                 .unwrap_or(0.0);
             println!(
                 "[{ts}] UPDATE frame={} time={}s score={}-{} players={} ball_speed={:.1}",
-                frame,
-                time_left,
-                blue,
-                orange,
-                players,
-                ball_speed
+                frame, time_left, blue, orange, players, ball_speed
             );
         }
         StatsEvent::ClockUpdatedSeconds(data) => {
@@ -299,11 +294,7 @@ fn print_pretty_event(event: &StatsEvent) {
             );
         }
         StatsEvent::Unknown(data) => {
-            println!(
-                "[{ts}] UNKNOWN event={} data={}",
-                data.event,
-                data.data
-            );
+            println!("[{ts}] UNKNOWN event={} data={}", data.event, data.data);
         }
         other => {
             println!("[{ts}] {}", stats_event_name(other));
@@ -343,7 +334,10 @@ fn print_compact_event(event: &StatsEvent) {
     }
 }
 
-fn team_score(data: &rlstatsapi::events::UpdateStateData, team_num: i64) -> Option<i64> {
+fn team_score(
+    data: &rlstatsapi::events::UpdateStateData,
+    team_num: i64,
+) -> Option<i64> {
     data.game
         .teams
         .iter()
@@ -397,7 +391,8 @@ fn parse_args() -> Result<CliOptions, Box<dyn std::error::Error>> {
                 player_name = Some(value);
             }
             "--player-id" => {
-                let value = args.next().ok_or("--player-id requires a value")?;
+                let value =
+                    args.next().ok_or("--player-id requires a value")?;
                 player_primary_id = Some(value);
             }
             "--team" => {
@@ -419,7 +414,8 @@ fn parse_args() -> Result<CliOptions, Box<dyn std::error::Error>> {
                 input_mode = InputMode::Stdin { strict: true };
             }
             "--max-events" => {
-                let value = args.next().ok_or("--max-events requires a value")?;
+                let value =
+                    args.next().ok_or("--max-events requires a value")?;
                 max_events = Some(value.parse::<usize>()?);
             }
             "--list-events" => {
@@ -538,9 +534,13 @@ fn describe_filters(cli: &CliOptions) -> String {
 
 fn event_kind_from_token(token: &str) -> Option<EventKind> {
     match token {
-        "update_state" | "update" | "state" | "tick" => Some(EventKind::UpdateState),
+        "update_state" | "update" | "state" | "tick" => {
+            Some(EventKind::UpdateState)
+        }
         "ball_hit" | "ballhit" => Some(EventKind::BallHit),
-        "clock_updated_seconds" | "clock" => Some(EventKind::ClockUpdatedSeconds),
+        "clock_updated_seconds" | "clock" => {
+            Some(EventKind::ClockUpdatedSeconds)
+        }
         "countdown_begin" | "countdown" => Some(EventKind::CountdownBegin),
         "crossbar_hit" | "crossbar" => Some(EventKind::CrossbarHit),
         "goal_replay_end" => Some(EventKind::GoalReplayEnd),
@@ -552,7 +552,9 @@ fn event_kind_from_token(token: &str) -> Option<EventKind> {
         "match_destroyed" => Some(EventKind::MatchDestroyed),
         "match_ended" | "ended" => Some(EventKind::MatchEnded),
         "match_paused" | "paused" | "pause" => Some(EventKind::MatchPaused),
-        "match_unpaused" | "unpaused" | "unpause" => Some(EventKind::MatchUnpaused),
+        "match_unpaused" | "unpaused" | "unpause" => {
+            Some(EventKind::MatchUnpaused)
+        }
         "podium_start" => Some(EventKind::PodiumStart),
         "replay_created" => Some(EventKind::ReplayCreated),
         "round_started" | "round" => Some(EventKind::RoundStarted),
@@ -621,7 +623,9 @@ fn print_event_list() {
     for event in events {
         println!("  {}", event_kind_name(event));
     }
-    println!("Aliases: goal, update, tick, clock, pause, unpause, round, statfeed, all");
+    println!(
+        "Aliases: goal, update, tick, clock, pause, unpause, round, statfeed, all"
+    );
 }
 
 fn print_format_list() {

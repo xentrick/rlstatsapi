@@ -75,7 +75,8 @@ impl RocketLeagueStatsClient {
                 return Ok(Some(event));
             }
 
-            let bytes_read = self.reader.read_buf(&mut self.read_buffer).await?;
+            let bytes_read =
+                self.reader.read_buf(&mut self.read_buffer).await?;
             if bytes_read == 0 {
                 return self.try_parse_event_from_buffer();
             }
@@ -107,8 +108,9 @@ impl RocketLeagueStatsClient {
             return Ok(None);
         }
 
-        let mut stream = serde_json::Deserializer::from_slice(&self.read_buffer)
-            .into_iter::<Value>();
+        let mut stream =
+            serde_json::Deserializer::from_slice(&self.read_buffer)
+                .into_iter::<Value>();
 
         match stream.next() {
             Some(Ok(value)) => {
@@ -138,19 +140,24 @@ impl RocketLeagueStatsClient {
         self,
         filter: EventFilter,
     ) -> impl Stream<Item = Result<StatsEvent, RlStatsError>> {
-        futures_util::stream::unfold((self, filter), |(mut client, filter)| async move {
-            loop {
-                match client.next_event().await {
-                    Ok(Some(event)) => {
-                        if filter.matches(&event) {
-                            return Some((Ok(event), (client, filter)));
+        futures_util::stream::unfold(
+            (self, filter),
+            |(mut client, filter)| async move {
+                loop {
+                    match client.next_event().await {
+                        Ok(Some(event)) => {
+                            if filter.matches(&event) {
+                                return Some((Ok(event), (client, filter)));
+                            }
+                        }
+                        Ok(None) => return None,
+                        Err(error) => {
+                            return Some((Err(error), (client, filter)));
                         }
                     }
-                    Ok(None) => return None,
-                    Err(error) => return Some((Err(error), (client, filter))),
                 }
-            }
-        })
+            },
+        )
     }
 
     pub async fn close(mut self) -> Result<(), RlStatsError> {

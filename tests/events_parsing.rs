@@ -1,6 +1,6 @@
-use rlstatsapi::{parse_stats_event, StatsEvent};
-use serde_json::json;
+use rlstatsapi::{StatsEvent, parse_stats_event};
 use serde_json::Value;
+use serde_json::json;
 use std::fs;
 use std::path::PathBuf;
 
@@ -47,10 +47,12 @@ fn fixture_path(file_name: &str) -> PathBuf {
 
 fn read_fixture_events(file_name: &str) -> Vec<Value> {
     let path = fixture_path(file_name);
-    let raw = fs::read_to_string(&path)
-        .unwrap_or_else(|err| panic!("failed to read fixture {}: {err}", path.display()));
-    let events: Vec<Value> = serde_json::from_str(&raw)
-        .unwrap_or_else(|err| panic!("invalid fixture JSON {}: {err}", path.display()));
+    let raw = fs::read_to_string(&path).unwrap_or_else(|err| {
+        panic!("failed to read fixture {}: {err}", path.display())
+    });
+    let events: Vec<Value> = serde_json::from_str(&raw).unwrap_or_else(|err| {
+        panic!("invalid fixture JSON {}: {err}", path.display())
+    });
     assert!(!events.is_empty(), "fixture {} is empty", path.display());
     events
 }
@@ -65,11 +67,17 @@ fn parses_all_documented_event_variants() {
         ),
         ("ClockUpdatedSeconds", json!({})),
         ("CountdownBegin", json!({})),
-        ("CrossbarHit", json!({"BallLocation": {"X": 0, "Y": 0, "Z": 0}})),
+        (
+            "CrossbarHit",
+            json!({"BallLocation": {"X": 0, "Y": 0, "Z": 0}}),
+        ),
         ("GoalReplayEnd", json!({})),
         ("GoalReplayStart", json!({})),
         ("GoalReplayWillEnd", json!({})),
-        ("GoalScored", json!({"ImpactLocation": {"X": 0, "Y": 0, "Z": 0}})),
+        (
+            "GoalScored",
+            json!({"ImpactLocation": {"X": 0, "Y": 0, "Z": 0}}),
+        ),
         ("MatchCreated", json!({})),
         ("MatchInitialized", json!({})),
         ("MatchDestroyed", json!({})),
@@ -103,7 +111,8 @@ fn keeps_unknown_events_for_forward_compatibility() {
 
 #[test]
 fn parses_when_data_is_nested_json_string() {
-    let payload = r#"{"Event":"RoundStarted","Data":"{\"MatchGuid\":\"ABC123\"}"}"#;
+    let payload =
+        r#"{"Event":"RoundStarted","Data":"{\"MatchGuid\":\"ABC123\"}"}"#;
 
     let event = parse_stats_event(payload).expect("event should parse");
 

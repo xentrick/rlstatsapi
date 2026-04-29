@@ -17,7 +17,6 @@ pub struct SosEnvelope {
     pub data: Value,
 }
 
-
 impl SosEnvelope {
     pub fn new(event: impl Into<String>, data: Value) -> Self {
         Self {
@@ -36,10 +35,16 @@ pub fn translate_stats_event(
 ) -> Result<Vec<SosEnvelope>, RlStatsError> {
     let mapped = match event {
         StatsEvent::MatchCreated(data) => {
-            vec![SosEnvelope::new("game:match_created", match_guid_payload(data))]
+            vec![SosEnvelope::new(
+                "game:match_created",
+                match_guid_payload(data),
+            )]
         }
         StatsEvent::MatchInitialized(data) => {
-            vec![SosEnvelope::new("game:initialized", match_guid_payload(data))]
+            vec![SosEnvelope::new(
+                "game:initialized",
+                match_guid_payload(data),
+            )]
         }
         StatsEvent::CountdownBegin(data) => {
             let payload = match_guid_payload(data);
@@ -49,11 +54,15 @@ pub fn translate_stats_event(
             ]
         }
         StatsEvent::UpdateState(data) => {
-            vec![SosEnvelope::new("game:update_state", translate_update_state(data))]
+            vec![SosEnvelope::new(
+                "game:update_state",
+                translate_update_state(data),
+            )]
         }
         StatsEvent::BallHit(data) => {
             let player = data.players.first();
-            let player_name = player.map(|value| value.name.clone()).unwrap_or_default();
+            let player_name =
+                player.map(|value| value.name.clone()).unwrap_or_default();
             let player_id = player.map(player_ref_id).unwrap_or_default();
             let payload = json!({
                 "match_guid": data.match_guid,
@@ -104,7 +113,9 @@ pub fn translate_stats_event(
                         "teamnum": player.team_num,
                     })
                 })
-                .unwrap_or_else(|| json!({"name": "", "id": "", "teamnum": Value::Null}));
+                .unwrap_or_else(
+                    || json!({"name": "", "id": "", "teamnum": Value::Null}),
+                );
 
             let payload = json!({
                 "match_guid": data.match_guid,
@@ -128,13 +139,22 @@ pub fn translate_stats_event(
             vec![SosEnvelope::new("game:goal_scored", payload)]
         }
         StatsEvent::GoalReplayStart(data) => {
-            vec![SosEnvelope::new("game:replay_start", match_guid_payload(data))]
+            vec![SosEnvelope::new(
+                "game:replay_start",
+                match_guid_payload(data),
+            )]
         }
         StatsEvent::GoalReplayWillEnd(data) => {
-            vec![SosEnvelope::new("game:replay_will_end", match_guid_payload(data))]
+            vec![SosEnvelope::new(
+                "game:replay_will_end",
+                match_guid_payload(data),
+            )]
         }
         StatsEvent::GoalReplayEnd(data) => {
-            vec![SosEnvelope::new("game:replay_end", match_guid_payload(data))]
+            vec![SosEnvelope::new(
+                "game:replay_end",
+                match_guid_payload(data),
+            )]
         }
         StatsEvent::MatchEnded(data) => {
             let payload = json!({
@@ -144,13 +164,22 @@ pub fn translate_stats_event(
             vec![SosEnvelope::new("game:match_ended", payload)]
         }
         StatsEvent::PodiumStart(data) => {
-            vec![SosEnvelope::new("game:podium_start", match_guid_payload(data))]
+            vec![SosEnvelope::new(
+                "game:podium_start",
+                match_guid_payload(data),
+            )]
         }
         StatsEvent::MatchDestroyed(data) => {
-            vec![SosEnvelope::new("game:match_destroyed", match_guid_payload(data))]
+            vec![SosEnvelope::new(
+                "game:match_destroyed",
+                match_guid_payload(data),
+            )]
         }
         StatsEvent::ReplayCreated(data) => {
-            vec![SosEnvelope::new("game:replay_created", match_guid_payload(data))]
+            vec![SosEnvelope::new(
+                "game:replay_created",
+                match_guid_payload(data),
+            )]
         }
         StatsEvent::RoundStarted(_) => {
             vec![SosEnvelope::new(
@@ -166,17 +195,16 @@ pub fn translate_stats_event(
     Ok(mapped)
 }
 
-fn passthrough_envelope(event: &StatsEvent) -> Result<SosEnvelope, RlStatsError> {
+fn passthrough_envelope(
+    event: &StatsEvent,
+) -> Result<SosEnvelope, RlStatsError> {
     let value = stats_event_to_value(event)?;
     let source_event = value
         .get("event")
         .and_then(Value::as_str)
         .unwrap_or("Unknown")
         .to_string();
-    let source_data = value
-        .get("data")
-        .cloned()
-        .unwrap_or(Value::Null);
+    let source_data = value.get("data").cloned().unwrap_or(Value::Null);
 
     Ok(SosEnvelope::new(source_event, source_data))
 }
@@ -190,7 +218,8 @@ fn match_guid_payload(data: &MatchOnlyData) -> Value {
 fn translate_update_state(data: &UpdateStateData) -> Value {
     let players = translate_players(data);
     let teams = translate_teams(&data.game.teams);
-    let ball_location = extract_location(&data.game.ball.as_ref().map(|ball| &ball.extra));
+    let ball_location =
+        extract_location(&data.game.ball.as_ref().map(|ball| &ball.extra));
     let ball_speed = data
         .game
         .ball
@@ -245,7 +274,14 @@ fn translate_players(data: &UpdateStateData) -> Value {
             .or_else(|| {
                 first_string(
                     &player.extra,
-                    &["PrimaryID", "primaryID", "Id", "id", "PlayerId", "playerId"],
+                    &[
+                        "PrimaryID",
+                        "primaryID",
+                        "Id",
+                        "id",
+                        "PlayerId",
+                        "playerId",
+                    ],
                 )
             })
             .unwrap_or_else(|| {
@@ -253,7 +289,9 @@ fn translate_players(data: &UpdateStateData) -> Value {
                     .name
                     .clone()
                     .filter(|value| !value.is_empty())
-                    .unwrap_or_else(|| player.shortcut.unwrap_or_default().to_string())
+                    .unwrap_or_else(|| {
+                        player.shortcut.unwrap_or_default().to_string()
+                    })
             });
 
         let location = extract_location(&Some(&player.extra));
@@ -306,14 +344,13 @@ fn translate_teams(teams: &[TeamState]) -> Value {
         }
     }
 
-    let defaults = [
-        ("Blue", "1873FF", "E5E5E5"),
-        ("Orange", "C26418", "E5E5E5"),
-    ];
+    let defaults =
+        [("Blue", "1873FF", "E5E5E5"), ("Orange", "C26418", "E5E5E5")];
 
     let mut output = Vec::with_capacity(2);
     for (index, team) in indexed.into_iter().enumerate() {
-        let (default_name, default_primary, default_secondary) = defaults[index];
+        let (default_name, default_primary, default_secondary) =
+            defaults[index];
         output.push(match team {
             Some(team) => {
                 json!({
@@ -340,7 +377,14 @@ fn translate_teams(teams: &[TeamState]) -> Value {
 fn player_ref_id(player: &PlayerRef) -> String {
     first_string(
         &player.extra,
-        &["PrimaryId", "PrimaryID", "id", "Id", "PlayerId", "player_id"],
+        &[
+            "PrimaryId",
+            "PrimaryID",
+            "id",
+            "Id",
+            "PlayerId",
+            "player_id",
+        ],
     )
     .unwrap_or_else(|| player.name.clone())
 }
@@ -437,7 +481,8 @@ mod tests {
             ..MatchOnlyData::default()
         });
 
-        let envelopes = translate_stats_event(&event).expect("translation should succeed");
+        let envelopes =
+            translate_stats_event(&event).expect("translation should succeed");
 
         assert_eq!(envelopes.len(), 2);
         assert_eq!(envelopes[0].event, "game:pre_countdown_begin");
@@ -450,7 +495,8 @@ mod tests {
     fn round_started_uses_sos_string_payload() {
         let event = StatsEvent::RoundStarted(MatchOnlyData::default());
 
-        let envelopes = translate_stats_event(&event).expect("translation should succeed");
+        let envelopes =
+            translate_stats_event(&event).expect("translation should succeed");
 
         assert_eq!(envelopes.len(), 1);
         assert_eq!(envelopes[0].event, "game:round_started_go");
@@ -467,7 +513,8 @@ mod tests {
             ..MatchOnlyData::default()
         });
 
-        let envelopes = translate_stats_event(&event).expect("translation should succeed");
+        let envelopes =
+            translate_stats_event(&event).expect("translation should succeed");
 
         assert_eq!(envelopes.len(), 1);
         assert_eq!(envelopes[0].event, "MatchPaused");

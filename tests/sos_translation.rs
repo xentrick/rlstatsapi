@@ -13,18 +13,22 @@ fn fixture_path(file_name: &str) -> PathBuf {
 
 fn read_fixture_events(file_name: &str) -> Vec<Value> {
     let path = fixture_path(file_name);
-    let raw = fs::read_to_string(&path)
-        .unwrap_or_else(|err| panic!("failed to read fixture {}: {err}", path.display()));
-    serde_json::from_str::<Vec<Value>>(&raw)
-        .unwrap_or_else(|err| panic!("invalid fixture JSON {}: {err}", path.display()))
+    let raw = fs::read_to_string(&path).unwrap_or_else(|err| {
+        panic!("failed to read fixture {}: {err}", path.display())
+    });
+    serde_json::from_str::<Vec<Value>>(&raw).unwrap_or_else(|err| {
+        panic!("invalid fixture JSON {}: {err}", path.display())
+    })
 }
 
 #[test]
 fn update_state_translation_uses_sos_shape_and_player_ids() {
     let events = read_fixture_events("UpdateState.json");
-    let event = parse_stats_event(&events[0].to_string()).expect("fixture event should parse");
+    let event = parse_stats_event(&events[0].to_string())
+        .expect("fixture event should parse");
 
-    let envelopes = translate_stats_event(&event).expect("translation should succeed");
+    let envelopes =
+        translate_stats_event(&event).expect("translation should succeed");
 
     assert_eq!(envelopes.len(), 1);
     assert_eq!(envelopes[0].event, "game:update_state");
@@ -63,14 +67,19 @@ fn goal_scored_translation_uses_sos_field_names() {
       }
     });
 
-    let event = parse_stats_event(&event_json.to_string()).expect("event should parse");
-    let envelopes = translate_stats_event(&event).expect("translation should succeed");
+    let event =
+        parse_stats_event(&event_json.to_string()).expect("event should parse");
+    let envelopes =
+        translate_stats_event(&event).expect("translation should succeed");
 
     assert_eq!(envelopes[0].event, "game:goal_scored");
     assert_eq!(envelopes[0].data["goalspeed"], 2010);
     assert_eq!(envelopes[0].data["scorer"]["id"], "Steam|123|0");
     assert_eq!(envelopes[0].data["assister"]["id"], "Steam|456|0");
-    assert_eq!(envelopes[0].data["ball_last_touch"]["player"], "Steam|123|0");
+    assert_eq!(
+        envelopes[0].data["ball_last_touch"]["player"],
+        "Steam|123|0"
+    );
 }
 
 #[test]
@@ -84,8 +93,10 @@ fn unknown_passthrough_preserves_source_event_name_and_data() {
       }
     });
 
-    let event = parse_stats_event(&event_json.to_string()).expect("event should parse");
-    let envelopes = translate_stats_event(&event).expect("translation should succeed");
+    let event =
+        parse_stats_event(&event_json.to_string()).expect("event should parse");
+    let envelopes =
+        translate_stats_event(&event).expect("translation should succeed");
 
     assert_eq!(envelopes.len(), 1);
     assert_eq!(envelopes[0].event, "ClockUpdatedSeconds");

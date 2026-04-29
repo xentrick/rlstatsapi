@@ -7,9 +7,9 @@ use serde_json::json;
 use tokio::runtime::Runtime;
 
 use crate::{
-    ClientOptions, EventFilter, EventKind, MatchSignal, RocketLeagueStatsClient,
-    parse_stats_event, stats_event_name, stats_event_to_value, to_match_signal,
-    winner_team_num,
+    ClientOptions, EventFilter, EventKind, MatchSignal,
+    RocketLeagueStatsClient, parse_stats_event, stats_event_name,
+    stats_event_to_value, to_match_signal, winner_team_num,
 };
 
 #[pyclass(name = "RocketLeagueStatsClient", unsendable)]
@@ -94,7 +94,8 @@ impl PyRocketLeagueStatsClient {
 
         match event {
             Some(event) => {
-                let value = stats_event_to_value(&event).map_err(to_runtime_err)?;
+                let value =
+                    stats_event_to_value(&event).map_err(to_runtime_err)?;
                 let serialized =
                     serde_json::to_string(&value).map_err(to_runtime_err)?;
                 Ok(Some(serialized))
@@ -140,7 +141,8 @@ impl PyRocketLeagueStatsClient {
 
         match event {
             Some(event) => {
-                let value = stats_event_to_value(&event).map_err(to_runtime_err)?;
+                let value =
+                    stats_event_to_value(&event).map_err(to_runtime_err)?;
                 let serialized =
                     serde_json::to_string(&value).map_err(to_runtime_err)?;
                 Ok(Some(serialized))
@@ -368,9 +370,13 @@ fn build_filter(
 
 fn parse_event_kind(token: &str) -> Option<EventKind> {
     match token {
-        "update_state" | "update" | "state" | "tick" => Some(EventKind::UpdateState),
+        "update_state" | "update" | "state" | "tick" => {
+            Some(EventKind::UpdateState)
+        }
         "ball_hit" | "ballhit" => Some(EventKind::BallHit),
-        "clock_updated_seconds" | "clock" => Some(EventKind::ClockUpdatedSeconds),
+        "clock_updated_seconds" | "clock" => {
+            Some(EventKind::ClockUpdatedSeconds)
+        }
         "countdown_begin" | "countdown" => Some(EventKind::CountdownBegin),
         "crossbar_hit" | "crossbar" => Some(EventKind::CrossbarHit),
         "goal_replay_end" => Some(EventKind::GoalReplayEnd),
@@ -382,7 +388,9 @@ fn parse_event_kind(token: &str) -> Option<EventKind> {
         "match_destroyed" => Some(EventKind::MatchDestroyed),
         "match_ended" | "ended" => Some(EventKind::MatchEnded),
         "match_paused" | "paused" | "pause" => Some(EventKind::MatchPaused),
-        "match_unpaused" | "unpaused" | "unpause" => Some(EventKind::MatchUnpaused),
+        "match_unpaused" | "unpaused" | "unpause" => {
+            Some(EventKind::MatchUnpaused)
+        }
         "podium_start" => Some(EventKind::PodiumStart),
         "replay_created" => Some(EventKind::ReplayCreated),
         "round_started" | "round" => Some(EventKind::RoundStarted),

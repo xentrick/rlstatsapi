@@ -4,11 +4,13 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::time::Duration;
 
 use futures_util::{SinkExt, StreamExt};
-use rlstatsapi::{ClientOptions, RocketLeagueStatsClient, translate_stats_event};
+use rlstatsapi::{
+    ClientOptions, RocketLeagueStatsClient, translate_stats_event,
+};
 use tokio::net::{TcpListener, TcpStream};
-use tokio::sync::{broadcast, watch};
 #[cfg(unix)]
 use tokio::signal::unix::{SignalKind, signal as unix_signal};
+use tokio::sync::{broadcast, watch};
 use tokio::time::sleep;
 use tokio_tungstenite::accept_async;
 use tokio_tungstenite::tungstenite::Message;
@@ -282,7 +284,9 @@ async fn handle_client(
 
     let _ = writer.close().await;
 
-    let remaining = client_count.fetch_sub(1, Ordering::SeqCst).saturating_sub(1);
+    let remaining = client_count
+        .fetch_sub(1, Ordering::SeqCst)
+        .saturating_sub(1);
     println!("Overlay client disconnected ({peer}); clients={remaining}");
 }
 
@@ -336,7 +340,9 @@ async fn reconnect_rl_with_backoff(
             Err(error) => {
                 debug_log(
                     cli,
-                    format!("RL reconnect failed on attempt {attempt}/10: {error}"),
+                    format!(
+                        "RL reconnect failed on attempt {attempt}/10: {error}"
+                    ),
                 );
                 last_error = Some(Box::new(error));
                 sleep(Duration::from_millis(cli.reconnect_ms)).await;
@@ -360,7 +366,9 @@ fn parse_args() -> Result<CliOptions, Box<dyn std::error::Error>> {
     }
 }
 
-fn parse_args_from<I>(args: I) -> Result<ParseOutcome, Box<dyn std::error::Error>>
+fn parse_args_from<I>(
+    args: I,
+) -> Result<ParseOutcome, Box<dyn std::error::Error>>
 where
     I: IntoIterator<Item = String>,
 {
@@ -398,11 +406,13 @@ where
                 ws_port = value.parse::<u16>()?;
             }
             "--reconnect-ms" => {
-                let value = args.next().ok_or("--reconnect-ms requires a value")?;
+                let value =
+                    args.next().ok_or("--reconnect-ms requires a value")?;
                 reconnect_ms = value.parse::<u64>()?;
             }
             "--max-events" => {
-                let value = args.next().ok_or("--max-events requires a value")?;
+                let value =
+                    args.next().ok_or("--max-events requires a value")?;
                 max_events = Some(value.parse::<usize>()?);
             }
             "-d" | "--debug" => {
@@ -443,7 +453,8 @@ mod tests {
 
     #[test]
     fn parse_args_uses_expected_defaults() {
-        let parsed = parse_args_from(Vec::<String>::new()).expect("parse defaults");
+        let parsed =
+            parse_args_from(Vec::<String>::new()).expect("parse defaults");
 
         let ParseOutcome::Run(cli) = parsed else {
             panic!("expected runnable options");
@@ -498,7 +509,8 @@ mod tests {
 
     #[test]
     fn parse_args_recognizes_help() {
-        let parsed = parse_args_from(vec!["--help".to_string()]).expect("parse help");
+        let parsed =
+            parse_args_from(vec!["--help".to_string()]).expect("parse help");
         assert!(matches!(parsed, ParseOutcome::Help));
     }
 }

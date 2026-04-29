@@ -107,7 +107,9 @@ impl EventFilter {
     }
 
     pub fn matches(&self, event: &StatsEvent) -> bool {
-        if !self.kinds.is_empty() && !self.kinds.contains(&EventKind::from(event)) {
+        if !self.kinds.is_empty()
+            && !self.kinds.contains(&EventKind::from(event))
+        {
             return false;
         }
 
@@ -225,11 +227,7 @@ impl PlayerTracker {
         let changed = self.latest.as_ref() != Some(&snapshot);
         self.latest = Some(snapshot.clone());
 
-        if changed {
-            Some(snapshot)
-        } else {
-            None
-        }
+        if changed { Some(snapshot) } else { None }
     }
 }
 
@@ -241,7 +239,9 @@ pub enum MatchSignal {
 
 pub fn to_match_signal(event: &StatsEvent) -> Option<MatchSignal> {
     match event {
-        StatsEvent::GoalScored(data) => Some(MatchSignal::GoalScored(data.clone())),
+        StatsEvent::GoalScored(data) => {
+            Some(MatchSignal::GoalScored(data.clone()))
+        }
         StatsEvent::MatchEnded(data) => {
             Some(MatchSignal::MatchConcluded(data.clone()))
         }
@@ -332,12 +332,9 @@ fn event_has_player_name(event: &StatsEvent, expected_name: &str) -> bool {
         }),
         StatsEvent::GoalScored(data) => {
             data.scorer.name.eq_ignore_ascii_case(expected_name)
-                || data
-                    .assister
-                    .as_ref()
-                    .is_some_and(|assister| {
-                        assister.name.eq_ignore_ascii_case(expected_name)
-                    })
+                || data.assister.as_ref().is_some_and(|assister| {
+                    assister.name.eq_ignore_ascii_case(expected_name)
+                })
                 || data
                     .ball_last_touch
                     .player
@@ -350,12 +347,9 @@ fn event_has_player_name(event: &StatsEvent, expected_name: &str) -> bool {
             .any(|player| player.name.eq_ignore_ascii_case(expected_name)),
         StatsEvent::StatfeedEvent(data) => {
             data.main_target.name.eq_ignore_ascii_case(expected_name)
-                || data
-                    .secondary_target
-                    .as_ref()
-                    .is_some_and(|target| {
-                        target.name.eq_ignore_ascii_case(expected_name)
-                    })
+                || data.secondary_target.as_ref().is_some_and(|target| {
+                    target.name.eq_ignore_ascii_case(expected_name)
+                })
         }
         _ => false,
     }

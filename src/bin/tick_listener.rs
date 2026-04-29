@@ -29,7 +29,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let time_seconds = data.game.time_seconds.unwrap_or(-1);
             let overtime = data.game.b_overtime.unwrap_or(false);
             let player_count = data.players.len();
-            let ball_speed = data.game.ball.as_ref().and_then(|ball| ball.speed).unwrap_or(0.0);
+            let ball_speed = data
+                .game
+                .ball
+                .as_ref()
+                .and_then(|ball| ball.speed)
+                .unwrap_or(0.0);
 
             println!(
                 "tick frame={} time={}s ot={} score={}-{} players={} ball_speed={:.1}",
@@ -47,7 +52,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-fn team_score(data: &rlstatsapi::events::UpdateStateData, team_num: i64) -> Option<i64> {
+fn team_score(
+    data: &rlstatsapi::events::UpdateStateData,
+    team_num: i64,
+) -> Option<i64> {
     data.game
         .teams
         .iter()
@@ -68,7 +76,9 @@ fn parse_ini_arg() -> Result<Option<PathBuf>, String> {
                 ini_path = Some(PathBuf::from(value));
             }
             "-h" | "--help" => {
-                println!("Usage: tick_listener [--ini <path>]\n\nIf --ini is omitted, uses 127.0.0.1:49123 without INI edits.");
+                println!(
+                    "Usage: tick_listener [--ini <path>]\n\nIf --ini is omitted, uses 127.0.0.1:49123 without INI edits."
+                );
                 std::process::exit(0);
             }
             other => {

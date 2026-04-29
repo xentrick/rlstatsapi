@@ -2,7 +2,7 @@ use std::fs;
 use std::path::PathBuf;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use rlstatsapi::{prepare_connection_config, ClientOptions, DEFAULT_PORT};
+use rlstatsapi::{ClientOptions, DEFAULT_PORT, prepare_connection_config};
 
 fn temp_ini_path(test_name: &str) -> PathBuf {
     let nanos = SystemTime::now()
@@ -27,7 +27,8 @@ fn sets_packet_send_rate_when_zero() {
         ..ClientOptions::default()
     };
 
-    let result = prepare_connection_config(&options).expect("prepare connection config");
+    let result =
+        prepare_connection_config(&options).expect("prepare connection config");
 
     assert_eq!(result.port, 49150);
     assert_eq!(result.packet_send_rate, 60.0);
@@ -42,7 +43,8 @@ fn sets_packet_send_rate_when_zero() {
 #[test]
 fn preserves_non_zero_rate_when_policy_only_if_zero() {
     let path = temp_ini_path("preserve_non_zero");
-    fs::write(&path, "PacketSendRate=30\nPort=49123\n").expect("write test ini");
+    fs::write(&path, "PacketSendRate=30\nPort=49123\n")
+        .expect("write test ini");
 
     let options = ClientOptions {
         stats_api_ini_path: Some(path.clone()),
@@ -51,7 +53,8 @@ fn preserves_non_zero_rate_when_policy_only_if_zero() {
         ..ClientOptions::default()
     };
 
-    let result = prepare_connection_config(&options).expect("prepare connection config");
+    let result =
+        prepare_connection_config(&options).expect("prepare connection config");
 
     assert_eq!(result.packet_send_rate, 30.0);
     assert!(!result.ini_mutated);
@@ -66,7 +69,8 @@ fn preserves_non_zero_rate_when_policy_only_if_zero() {
 #[test]
 fn overrides_non_zero_rate_when_policy_allows_override() {
     let path = temp_ini_path("override_non_zero");
-    fs::write(&path, "PacketSendRate=30\nPort=49123\n").expect("write test ini");
+    fs::write(&path, "PacketSendRate=30\nPort=49123\n")
+        .expect("write test ini");
 
     let options = ClientOptions {
         stats_api_ini_path: Some(path.clone()),
@@ -75,7 +79,8 @@ fn overrides_non_zero_rate_when_policy_allows_override() {
         ..ClientOptions::default()
     };
 
-    let result = prepare_connection_config(&options).expect("prepare connection config");
+    let result =
+        prepare_connection_config(&options).expect("prepare connection config");
 
     assert_eq!(result.packet_send_rate, 120.0);
     assert!(result.ini_mutated);
@@ -96,7 +101,8 @@ fn adds_default_port_when_missing() {
         ..ClientOptions::default()
     };
 
-    let result = prepare_connection_config(&options).expect("prepare connection config");
+    let result =
+        prepare_connection_config(&options).expect("prepare connection config");
 
     assert_eq!(result.port, DEFAULT_PORT);
     assert!(result.ini_mutated);

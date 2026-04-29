@@ -192,7 +192,10 @@ async fn reconnect_rl_with_backoff(
     let mut last_error: Option<Box<dyn std::error::Error>> = None;
 
     for attempt in 1..=10 {
-        debug_log(&cli, format!("attempting RL reconnect (attempt {attempt}/10)"));
+        debug_log(
+            &cli,
+            format!("attempting RL reconnect (attempt {attempt}/10)"),
+        );
         match client.reconnect().await {
             Ok(()) => {
                 debug_log(
@@ -207,7 +210,9 @@ async fn reconnect_rl_with_backoff(
             Err(error) => {
                 debug_log(
                     &cli,
-                    format!("RL reconnect failed on attempt {attempt}/10: {error}"),
+                    format!(
+                        "RL reconnect failed on attempt {attempt}/10: {error}"
+                    ),
                 );
                 last_error = Some(Box::new(error));
                 sleep(Duration::from_millis(cli.reconnect_ms)).await;
@@ -242,7 +247,8 @@ async fn connect_ws_with_retry(
                     cli,
                     format!(
                         "overlay websocket connected (status {}): {}",
-                        response.status(), destination
+                        response.status(),
+                        destination
                     ),
                 );
                 return Ok(stream);
@@ -250,8 +256,7 @@ async fn connect_ws_with_retry(
             Err(error) => {
                 eprintln!(
                     "WebSocket connection failed ({}): {}; retrying...",
-                    destination,
-                    error
+                    destination, error
                 );
                 sleep(Duration::from_millis(cli.reconnect_ms)).await;
                 attempt += 1;
@@ -333,14 +338,16 @@ fn parse_args() -> Result<CliOptions, Box<dyn std::error::Error>> {
                 ws_path = Some(normalize_ws_path(&value));
             }
             "--reconnect-ms" => {
-                let value = args.next().ok_or("--reconnect-ms requires a value")?;
+                let value =
+                    args.next().ok_or("--reconnect-ms requires a value")?;
                 reconnect_ms = value.parse::<u64>()?;
             }
             "-d" | "--debug" => {
                 debug = true;
             }
             "--max-events" => {
-                let value = args.next().ok_or("--max-events requires a value")?;
+                let value =
+                    args.next().ok_or("--max-events requires a value")?;
                 max_events = Some(value.parse::<usize>()?);
             }
             "-h" | "--help" => {
@@ -389,7 +396,8 @@ fn build_ws_target(
         .ok_or("--ws-host must include a hostname")?
         .to_string();
 
-    let port = match (ws_port_override, parsed_url.port(), has_explicit_scheme) {
+    let port = match (ws_port_override, parsed_url.port(), has_explicit_scheme)
+    {
         (Some(port), _, _) => port,
         (None, Some(port), _) => port,
         (None, None, true) => default_port_for_ws_scheme(scheme),
@@ -409,7 +417,9 @@ fn build_ws_target(
     })
 }
 
-fn map_ws_scheme(scheme: &str) -> Result<&'static str, Box<dyn std::error::Error>> {
+fn map_ws_scheme(
+    scheme: &str,
+) -> Result<&'static str, Box<dyn std::error::Error>> {
     match scheme {
         "ws" | "http" => Ok("ws"),
         "wss" | "https" => Ok("wss"),
@@ -455,14 +465,20 @@ mod tests {
 
     #[test]
     fn maps_https_to_wss_and_keeps_path() {
-        let target = build_ws_target("https://overlay.rscna.com/ws", None, None).unwrap();
+        let target =
+            build_ws_target("https://overlay.rscna.com/ws", None, None)
+                .unwrap();
         assert_eq!(target.to_url(), "wss://overlay.rscna.com:443/ws");
     }
 
     #[test]
     fn explicit_overrides_take_precedence() {
-        let target =
-            build_ws_target("https://overlay.rscna.com/ws/", Some(80), Some("/ws")).unwrap();
+        let target = build_ws_target(
+            "https://overlay.rscna.com/ws/",
+            Some(80),
+            Some("/ws"),
+        )
+        .unwrap();
         assert_eq!(target.to_url(), "wss://overlay.rscna.com:80/ws");
     }
 

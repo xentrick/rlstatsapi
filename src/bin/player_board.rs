@@ -37,7 +37,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     )
     .await?;
 
-    let mut last_render = Instant::now() - Duration::from_millis(cli.refresh_ms);
+    let mut last_render =
+        Instant::now() - Duration::from_millis(cli.refresh_ms);
 
     println!(
         "Tracking players from {} (refresh={}ms)",
@@ -48,7 +49,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     loop {
         match client.next_event().await {
             Ok(Some(StatsEvent::UpdateState(state))) => {
-                if last_render.elapsed() >= Duration::from_millis(cli.refresh_ms) {
+                if last_render.elapsed()
+                    >= Duration::from_millis(cli.refresh_ms)
+                {
                     render_state(&state)?;
                     last_render = Instant::now();
                 }
@@ -94,14 +97,12 @@ fn render_state(
     players.sort_by(|left, right| {
         let left_team = left.team_num.unwrap_or(-1);
         let right_team = right.team_num.unwrap_or(-1);
-        left_team
-            .cmp(&right_team)
-            .then_with(|| {
-                left.name
-                    .as_deref()
-                    .unwrap_or("")
-                    .cmp(right.name.as_deref().unwrap_or(""))
-            })
+        left_team.cmp(&right_team).then_with(|| {
+            left.name
+                .as_deref()
+                .unwrap_or("")
+                .cmp(right.name.as_deref().unwrap_or(""))
+        })
     });
 
     let blue = team_score(data, 0).unwrap_or(-1);
@@ -138,17 +139,7 @@ fn render_state(
     writeln!(
         out,
         "{:-<4} {:-<18} {:-<7} {:-<6} {:-<5} {:-<5} {:-<5} {:-<6} {:-<6} {:-<6} {:-<7}",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
+        "", "", "", "", "", "", "", "", "", "", ""
     )?;
 
     for player in players {
@@ -183,7 +174,9 @@ fn short_primary_id(value: &str) -> &str {
 }
 
 fn fmt_opt_i64(value: Option<i64>) -> String {
-    value.map(|v| v.to_string()).unwrap_or_else(|| "-".to_string())
+    value
+        .map(|v| v.to_string())
+        .unwrap_or_else(|| "-".to_string())
 }
 
 fn fmt_opt_f64(value: Option<f64>) -> String {
@@ -192,7 +185,10 @@ fn fmt_opt_f64(value: Option<f64>) -> String {
         .unwrap_or_else(|| "-".to_string())
 }
 
-fn team_score(data: &rlstatsapi::events::UpdateStateData, team_num: i64) -> Option<i64> {
+fn team_score(
+    data: &rlstatsapi::events::UpdateStateData,
+    team_num: i64,
+) -> Option<i64> {
     data.game
         .teams
         .iter()
@@ -223,7 +219,8 @@ fn parse_args() -> Result<CliOptions, Box<dyn std::error::Error>> {
                 port = Some(value.parse::<u16>()?);
             }
             "--refresh-ms" => {
-                let value = args.next().ok_or("--refresh-ms requires a value")?;
+                let value =
+                    args.next().ok_or("--refresh-ms requires a value")?;
                 refresh_ms = value.parse::<u64>()?;
             }
             "-h" | "--help" => {

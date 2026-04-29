@@ -8,10 +8,7 @@ async fn reserve_free_port() -> u16 {
     let listener = TcpListener::bind("127.0.0.1:0")
         .await
         .expect("bind ephemeral port");
-    let port = listener
-        .local_addr()
-        .expect("read listener address")
-        .port();
+    let port = listener.local_addr().expect("read listener address").port();
     drop(listener);
     port
 }
@@ -33,10 +30,7 @@ async fn spawn_server_on_port(
                 .write_all(event.as_bytes())
                 .await
                 .expect("send event payload");
-            stream
-                .write_all(b"\n")
-                .await
-                .expect("send event separator");
+            stream.write_all(b"\n").await.expect("send event separator");
         }
     })
 }
@@ -56,7 +50,8 @@ async fn connect_with_retry_succeeds_after_server_starts() {
 
     let delayed_server = tokio::spawn(async move {
         sleep(Duration::from_millis(200)).await;
-        let events = vec![r#"{"Event":"RoundStarted","Data":{"MatchGuid":"R1"}}"#];
+        let events =
+            vec![r#"{"Event":"RoundStarted","Data":{"MatchGuid":"R1"}}"#];
         let server = spawn_server_on_port(port, events).await;
         server.await.expect("server join");
     });
