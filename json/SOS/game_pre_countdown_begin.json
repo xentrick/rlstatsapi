@@ -1,0 +1,6 @@
+{
+  "event": "game:pre_countdown_begin",
+  "data": {
+    "match_guid": "M-EXAMPLE-123"
+  }
+}

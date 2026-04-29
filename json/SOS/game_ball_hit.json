@@ -1,0 +1,19 @@
+{
+  "event": "game:ball_hit",
+  "data": {
+    "match_guid": "M-EXAMPLE-123",
+    "player": {
+      "name": "BlueStriker",
+      "id": "BlueStriker_1"
+    },
+    "ball": {
+      "location": {
+        "X": 1450.2,
+        "Y": -210.9,
+        "Z": 130.4
+      },
+      "pre_hit_speed": 980,
+      "post_hit_speed": 1520
+    }
+  }
+}

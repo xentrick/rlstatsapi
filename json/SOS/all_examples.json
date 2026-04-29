@@ -1,0 +1,218 @@
+[
+  {
+    "event": "sos:version",
+    "data": "1.6.0-beta.6-rlstatsapi"
+  },
+  {
+    "event": "game:match_created",
+    "data": {
+      "match_guid": "M-EXAMPLE-123"
+    }
+  },
+  {
+    "event": "game:initialized",
+    "data": {
+      "match_guid": "M-EXAMPLE-123"
+    }
+  },
+  {
+    "event": "game:pre_countdown_begin",
+    "data": {
+      "match_guid": "M-EXAMPLE-123"
+    }
+  },
+  {
+    "event": "game:post_countdown_begin",
+    "data": {
+      "match_guid": "M-EXAMPLE-123"
+    }
+  },
+  {
+    "event": "game:update_state",
+    "data": {
+      "match_guid": "M-EXAMPLE-123",
+      "hasGame": true,
+      "game": {
+        "arena": "DFH Stadium",
+        "time": 287,
+        "time_seconds": 287,
+        "isOT": false,
+        "isReplay": false,
+        "hasWinner": false,
+        "winner": "",
+        "hasTarget": true,
+        "target": "Ball",
+        "ball": {
+          "location": {
+            "X": 123.4,
+            "Y": -456.7,
+            "Z": 95.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 1.57
+          },
+          "speed": 1420,
+          "team": 1
+        },
+        "teams": [
+          {
+            "name": "Blue",
+            "score": 2,
+            "color_primary": "1873FF",
+            "color_secondary": "E5E5E5"
+          },
+          {
+            "name": "Orange",
+            "score": 1,
+            "color_primary": "C26418",
+            "color_secondary": "E5E5E5"
+          }
+        ]
+      },
+      "players": {
+        "BlueStriker_1": {
+          "name": "BlueStriker",
+          "id": "BlueStriker_1",
+          "primaryID": "Steam|111|0",
+          "team": 0,
+          "score": 520,
+          "goals": 1,
+          "shots": 3,
+          "assists": 0,
+          "saves": 1,
+          "touches": 12,
+          "cartouches": 9,
+          "demos": 0,
+          "boost": 47,
+          "speed": 1325,
+          "hasCar": true,
+          "isSonic": false,
+          "isPowersliding": false,
+          "isDead": false,
+          "attacker": "",
+          "shortcut": "BS",
+          "onGround": true,
+          "onWall": false,
+          "location": {
+            "X": -1200.0,
+            "Y": 350.0,
+            "Z": 18.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 2.41
+          }
+        }
+      }
+    }
+  },
+  {
+    "event": "game:ball_hit",
+    "data": {
+      "match_guid": "M-EXAMPLE-123",
+      "player": {
+        "name": "BlueStriker",
+        "id": "BlueStriker_1"
+      },
+      "ball": {
+        "location": {
+          "X": 1450.2,
+          "Y": -210.9,
+          "Z": 130.4
+        },
+        "pre_hit_speed": 980,
+        "post_hit_speed": 1520
+      }
+    }
+  },
+  {
+    "event": "game:statfeed_event",
+    "data": {
+      "match_guid": "M-EXAMPLE-123",
+      "event_name": "Demolish",
+      "type": "Demolish",
+      "main_target": {
+        "name": "BlueStriker",
+        "id": "BlueStriker_1",
+        "team_num": 0
+      },
+      "secondary_target": {
+        "name": "OrangeKeeper",
+        "id": "OrangeKeeper_5",
+        "team_num": 1
+      }
+    }
+  },
+  {
+    "event": "game:goal_scored",
+    "data": {
+      "match_guid": "M-EXAMPLE-123",
+      "goalspeed": 2010,
+      "goaltime": 45.0,
+      "impact_location": {
+        "X": 0.2,
+        "Y": 0.7
+      },
+      "scorer": {
+        "name": "BlueStriker",
+        "id": "BlueStriker_1",
+        "teamnum": 0
+      },
+      "assister": {
+        "name": "BlueMid",
+        "id": "BlueMid_3",
+        "teamnum": 0
+      },
+      "ball_last_touch": {
+        "player": "BlueStriker_1",
+        "speed": 1980
+      }
+    }
+  },
+  {
+    "event": "game:replay_start",
+    "data": {
+      "match_guid": "M-EXAMPLE-123"
+    }
+  },
+  {
+    "event": "game:replay_will_end",
+    "data": {
+      "match_guid": "M-EXAMPLE-123"
+    }
+  },
+  {
+    "event": "game:replay_end",
+    "data": {
+      "match_guid": "M-EXAMPLE-123"
+    }
+  },
+  {
+    "event": "game:match_ended",
+    "data": {
+      "match_guid": "M-EXAMPLE-123",
+      "winner_team_num": 0
+    }
+  },
+  {
+    "event": "game:podium_start",
+    "data": {
+      "match_guid": "M-EXAMPLE-123"
+    }
+  },
+  {
+    "event": "game:match_destroyed",
+    "data": {
+      "match_guid": "M-EXAMPLE-123"
+    }
+  },
+  {
+    "event": "game:replay_created",
+    "data": {
+      "match_guid": "M-EXAMPLE-123"
+    }
+  },
+  {
+    "event": "game:round_started_go",
+    "data": "game_round_started_go"
+  }
+]

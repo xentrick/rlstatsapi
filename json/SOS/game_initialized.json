@@ -1,0 +1,6 @@
+{
+  "event": "game:initialized",
+  "data": {
+    "match_guid": "M-EXAMPLE-123"
+  }
+}

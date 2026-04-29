@@ -83,9 +83,11 @@ pub fn translate_stats_event(
             vec![SosEnvelope::new("game:ball_hit", payload)]
         }
         StatsEvent::StatfeedEvent(data) => {
+            let event_name =
+                normalize_statfeed_event_name(&data.event_name, &data.type_label);
             let payload = json!({
                 "match_guid": data.match_guid,
-                "event_name": data.event_name,
+                "event_name": event_name,
                 "type": data.type_label,
                 "main_target": {
                     "name": data.main_target.name,
@@ -250,7 +252,7 @@ fn translate_update_state(data: &UpdateStateData) -> Value {
                 .game
                 .target
                 .as_ref()
-                .map(|target| target.name.clone())
+                .map(target_ref_value)
                 .unwrap_or_default(),
             "ball": {
                 "location": ball_location,
@@ -267,32 +269,12 @@ fn translate_players(data: &UpdateStateData) -> Value {
     let mut players = Map::<String, Value>::new();
 
     for player in &data.players {
-        let player_id = player
-            .primary_id
-            .clone()
-            .filter(|value| !value.is_empty())
-            .or_else(|| {
-                first_string(
-                    &player.extra,
-                    &[
-                        "PrimaryID",
-                        "primaryID",
-                        "Id",
-                        "id",
-                        "PlayerId",
-                        "playerId",
-                    ],
-                )
-            })
-            .unwrap_or_else(|| {
-                player
-                    .name
-                    .clone()
-                    .filter(|value| !value.is_empty())
-                    .unwrap_or_else(|| {
-                        player.shortcut.unwrap_or_default().to_string()
-                    })
-            });
+        let player_name = player.name.clone().unwrap_or_default();
+        let player_shortcut = player
+            .shortcut
+            .or_else(|| first_i64(&player.extra, &["Shortcut", "shortcut"]))
+            .unwrap_or(0);
+        let player_id = format_player_id(&player_name, player_shortcut);
 
         let location = extract_location(&Some(&player.extra));
         let attacker = player
@@ -302,7 +284,7 @@ fn translate_players(data: &UpdateStateData) -> Value {
             .unwrap_or_default();
 
         let payload = json!({
-            "name": player.name.clone().unwrap_or_default(),
+            "name": player_name,
             "id": player_id.clone(),
             "primaryID": player.primary_id.clone().unwrap_or_default(),
             "team": player.team_num.unwrap_or_default(),
@@ -375,18 +357,35 @@ fn translate_teams(teams: &[TeamState]) -> Value {
 }
 
 fn player_ref_id(player: &PlayerRef) -> String {
-    first_string(
-        &player.extra,
-        &[
-            "PrimaryId",
-            "PrimaryID",
-            "id",
-            "Id",
-            "PlayerId",
-            "player_id",
-        ],
-    )
-    .unwrap_or_else(|| player.name.clone())
+    let shortcut = player_ref_shortcut(player).unwrap_or(0);
+
+    format_player_id(&player.name, shortcut)
+}
+
+fn target_ref_value(target: &PlayerRef) -> String {
+    if player_ref_shortcut(target).is_some() {
+        player_ref_id(target)
+    } else {
+        target.name.clone()
+    }
+}
+
+fn player_ref_shortcut(player: &PlayerRef) -> Option<i64> {
+    if let Some(shortcut) =
+        first_i64(&player.extra, &["Shortcut", "shortcut"])
+    {
+        return Some(shortcut);
+    }
+
+    if player.shortcut != 0 {
+        Some(player.shortcut)
+    } else {
+        None
+    }
+}
+
+fn format_player_id(name: &str, shortcut: i64) -> String {
+    format!("{name}_{shortcut}")
 }
 
 fn extract_location(extra: &Option<&HashMap<String, Value>>) -> Value {
@@ -442,13 +441,12 @@ fn vector3_value(x: f64, y: f64, z: f64) -> Value {
     })
 }
 
-fn first_string(map: &HashMap<String, Value>, keys: &[&str]) -> Option<String> {
+fn first_i64(map: &HashMap<String, Value>, keys: &[&str]) -> Option<i64> {
     keys.iter().find_map(|key| {
         map.get(*key).and_then(|value| {
             value
-                .as_str()
-                .map(ToOwned::to_owned)
-                .or_else(|| value.as_i64().map(|number| number.to_string()))
+                .as_i64()
+                .or_else(|| value.as_str().and_then(|text| text.parse::<i64>().ok()))
         })
     })
 }
@@ -465,6 +463,16 @@ fn value_to_f64(value: Option<&Value>) -> Option<f64> {
 
 fn round_to_i64(value: f64) -> i64 {
     value.round() as i64
+}
+
+fn normalize_statfeed_event_name(event_name: &str, type_label: &str) -> String {
+    if event_name.eq_ignore_ascii_case("demolition")
+        || (event_name.is_empty() && type_label.eq_ignore_ascii_case("demolish"))
+    {
+        "Demolish".to_string()
+    } else {
+        event_name.to_string()
+    }
 }
 
 #[cfg(test)]

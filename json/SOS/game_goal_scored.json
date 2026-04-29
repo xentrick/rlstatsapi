@@ -1,0 +1,26 @@
+{
+  "event": "game:goal_scored",
+  "data": {
+    "match_guid": "M-EXAMPLE-123",
+    "goalspeed": 2010,
+    "goaltime": 45.0,
+    "impact_location": {
+      "X": 0.2,
+      "Y": 0.7
+    },
+    "scorer": {
+      "name": "BlueStriker",
+      "id": "BlueStriker_1",
+      "teamnum": 0
+    },
+    "assister": {
+      "name": "BlueMid",
+      "id": "BlueMid_3",
+      "teamnum": 0
+    },
+    "ball_last_touch": {
+      "player": "BlueStriker_1",
+      "speed": 1980
+    }
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "event": "game:update_state",
+  "data": {
+    "match_guid": "M-EXAMPLE-123",
+    "hasGame": true,
+    "game": {
+      "arena": "DFH Stadium",
+      "time": 287,
+      "time_seconds": 287,
+      "isOT": false,
+      "isReplay": false,
+      "hasWinner": false,
+      "winner": "",
+      "hasTarget": true,
+      "target": "Ball",
+      "ball": {
+        "location": {
+          "X": 123.4,
+          "Y": -456.7,
+          "Z": 95.0,
+          "pitch": 0.0,
+          "roll": 0.0,
+          "yaw": 1.57
+        },
+        "speed": 1420,
+        "team": 1
+      },
+      "teams": [
+        {
+          "name": "Blue",
+          "score": 2,
+          "color_primary": "1873FF",
+          "color_secondary": "E5E5E5"
+        },
+        {
+          "name": "Orange",
+          "score": 1,
+          "color_primary": "C26418",
+          "color_secondary": "E5E5E5"
+        }
+      ]
+    },
+    "players": {
+      "BlueStriker_1": {
+        "name": "BlueStriker",
+        "id": "BlueStriker_1",
+        "primaryID": "Steam|111|0",
+        "team": 0,
+        "score": 520,
+        "goals": 1,
+        "shots": 3,
+        "assists": 0,
+        "saves": 1,
+        "touches": 12,
+        "cartouches": 9,
+        "demos": 0,
+        "boost": 47,
+        "speed": 1325,
+        "hasCar": true,
+        "isSonic": false,
+        "isPowersliding": false,
+        "isDead": false,
+        "attacker": "",
+        "shortcut": "BS",
+        "onGround": true,
+        "onWall": false,
+        "location": {
+          "X": -1200.0,
+          "Y": 350.0,
+          "Z": 18.0,
+          "pitch": 0.0,
+          "roll": 0.0,
+          "yaw": 2.41
+        }
+      },
+      "OrangeKeeper_5": {
+        "name": "OrangeKeeper",
+        "id": "OrangeKeeper_5",
+        "primaryID": "Epic|222|0",
+        "team": 1,
+        "score": 430,
+        "goals": 0,
+        "shots": 1,
+        "assists": 1,
+        "saves": 3,
+        "touches": 10,
+        "cartouches": 7,
+        "demos": 1,
+        "boost": 62,
+        "speed": 1180,
+        "hasCar": true,
+        "isSonic": false,
+        "isPowersliding": true,
+        "isDead": false,
+        "attacker": "BlueStriker",
+        "shortcut": "OK",
+        "onGround": false,
+        "onWall": true,
+        "location": {
+          "X": 980.0,
+          "Y": -640.0,
+          "Z": 210.0,
+          "pitch": 0.08,
+          "roll": -0.03,
+          "yaw": -1.57
+        }
+      }
+    }
+  }
+}

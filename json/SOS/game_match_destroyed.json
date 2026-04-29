@@ -1,0 +1,6 @@
+{
+  "event": "game:match_destroyed",
+  "data": {
+    "match_guid": "M-EXAMPLE-123"
+  }
+}

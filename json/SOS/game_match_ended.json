@@ -1,0 +1,7 @@
+{
+  "event": "game:match_ended",
+  "data": {
+    "match_guid": "M-EXAMPLE-123",
+    "winner_team_num": 0
+  }
+}

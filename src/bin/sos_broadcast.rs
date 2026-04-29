@@ -5,8 +5,10 @@ use std::time::Duration;
 
 use futures_util::{SinkExt, StreamExt};
 use rlstatsapi::{
-    ClientOptions, RocketLeagueStatsClient, translate_stats_event,
+    ClientOptions, RocketLeagueStatsClient, stats_event_name,
+    translate_stats_event, SosEnvelope,
 };
+use serde_json::json;
 use tokio::net::{TcpListener, TcpStream};
 #[cfg(unix)]
 use tokio::signal::unix::{SignalKind, signal as unix_signal};
@@ -37,6 +39,30 @@ fn debug_log(cli: &CliOptions, message: impl AsRef<str>) {
     if cli.debug {
         eprintln!("[debug] {}", message.as_ref());
     }
+}
+
+fn debug_event_log(
+    cli: &CliOptions,
+    action: &str,
+    source_event: &str,
+    sos_event: &SosEnvelope,
+    subscribers: Option<usize>,
+    reason: Option<&str>,
+) {
+    if !cli.debug {
+        return;
+    }
+
+    let log = json!({
+        "type": "event",
+        "action": action,
+        "source_event": source_event,
+        "sos_event": sos_event,
+        "subscribers": subscribers,
+        "reason": reason,
+    });
+
+    eprintln!("{}", log);
 }
 
 #[tokio::main]
@@ -100,27 +126,29 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             next_event = client.next_event() => {
                 match next_event {
                     Ok(Some(event)) => {
+                        let source_event = stats_event_name(&event);
                         for envelope in translate_stats_event(&event)? {
                             let payload = serde_json::to_string(&envelope)?;
 
                             match outgoing_tx.send(payload) {
                                 Ok(subscribers) => {
-                                    debug_log(
+                                    debug_event_log(
                                         &cli,
-                                        format!(
-                                            "broadcast '{}' to {} websocket client(s)",
-                                            envelope.event,
-                                            subscribers,
-                                        ),
+                                        "broadcast",
+                                        source_event,
+                                        &envelope,
+                                        Some(subscribers),
+                                        None,
                                     );
                                 }
                                 Err(_) => {
-                                    debug_log(
+                                    debug_event_log(
                                         &cli,
-                                        format!(
-                                            "dropped '{}' because no websocket clients are connected",
-                                            envelope.event,
-                                        ),
+                                        "dropped",
+                                        source_event,
+                                        &envelope,
+                                        None,
+                                        Some("no_websocket_clients"),
                                     );
                                 }
                             }

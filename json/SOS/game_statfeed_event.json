@@ -1,0 +1,18 @@
+{
+  "event": "game:statfeed_event",
+  "data": {
+    "match_guid": "M-EXAMPLE-123",
+    "event_name": "Demolish",
+    "type": "Demolish",
+    "main_target": {
+      "name": "BlueStriker",
+      "id": "BlueStriker_1",
+      "team_num": 0
+    },
+    "secondary_target": {
+      "name": "OrangeKeeper",
+      "id": "OrangeKeeper_5",
+      "team_num": 1
+    }
+  }
+}

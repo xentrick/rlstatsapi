@@ -1,0 +1,6 @@
+{
+  "event": "game:replay_end",
+  "data": {
+    "match_guid": "M-EXAMPLE-123"
+  }
+}
