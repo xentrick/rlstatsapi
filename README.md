@@ -188,3 +188,38 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 ```
+
+## Automated Releases (GitHub)
+
+This repository now has two release workflows:
+
+- `Release` (`.github/workflows/release.yml`) builds and publishes Rust binaries for:
+    - `x86_64-unknown-linux-gnu`
+    - `x86_64-pc-windows-msvc`
+    - `x86_64-apple-darwin`
+    - `aarch64-apple-darwin`
+- `Python Wheels` (`.github/workflows/python-wheels.yml`) builds wheels for the same desktop platforms and uploads them to the same GitHub Release.
+
+### Triggering a Release
+
+1. Bump versions as needed.
+2. Create and push a version tag:
+
+```bash
+git tag v0.1.2
+git push origin v0.1.2
+```
+
+3. Wait for `Release` to publish binary artifacts.
+4. Wait for `Python Wheels` to upload wheel artifacts to that release.
+
+### Optional PyPI Publish
+
+If the repository secret `PYPI_API_TOKEN` is set, the wheel workflow also publishes non-prerelease wheel builds to PyPI when a GitHub Release is published.
+
+### Why Native CI Runners (Not Docker Everywhere)
+
+- Linux wheels use manylinux (Docker-backed) for compatibility.
+- Windows and macOS binaries/wheels are built on native runners to avoid brittle cross-toolchain issues.
+
+This gives repeatable Linux artifacts while still producing correct native outputs for Windows and macOS.
