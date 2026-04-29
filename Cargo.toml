@@ -38,7 +38,7 @@ default = []
 python = ["dep:pyo3"]
 
 [workspace]
-members = [".", "fuzz"]
+members = ["."]
 default-members = ["."]
 
 [dependencies]
