@@ -8,6 +8,7 @@ readme = "README.md"
 repository = "https://github.com/xentrick/rlstatsapi"
 homepage = "https://github.com/xentrick/rlstatsapi"
 documentation = "https://docs.rs/rlstatsapi"
+authors = ["nickm"]
 keywords = ["rocket-league", "stats", "events", "tcp", "pyo3"]
 categories = [
     "api-bindings",
@@ -29,6 +30,12 @@ exclude = [
     "uv.lock",
     "test.py",
 ]
+
+[package.metadata.wix]
+upgrade-guid = "763F0B78-4210-4D6A-BEF2-2DEE0E74A47F"
+path-guid = "5058A27A-E7FA-4C3A-9EAE-D2258314EC60"
+license = false
+eula = false
 
 [lib]
 crate-type = ["rlib", "cdylib"]
