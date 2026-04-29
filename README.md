@@ -12,6 +12,7 @@ Rust client and parser for Rocket League Stats API event streams over TCP, with 
 - Event filtering and player/match tracking helpers (`EventFilter`, `PlayerTracker`, `MatchSignal`).
 - Config helpers for optional Stats API INI handling.
 - CLI binaries for raw, compact tick, and pretty filtered output.
+- SOS relay binary that translates RL events to SOS-style websocket events.
 - Optional Python extension module (`rlstatsapi`) behind the `python` Cargo feature.
 - Example Python library in `examples/python_library`.
 
@@ -61,6 +62,52 @@ cargo run --bin rl_events -- --event goal
 ```bash
 cargo run --bin player_board
 ```
+
+### 5) SOS websocket relay (outbound client)
+
+```bash
+cargo run --bin sos_relay
+```
+
+Send translated SOS events to a custom overlay endpoint:
+
+```bash
+cargo run --bin sos_relay -- --ws-host 10.0.0.42 --ws-port 49122
+```
+
+Show all options:
+
+```bash
+cargo run --bin sos_relay -- --help
+```
+
+### 6) SOS websocket broadcast server (middleman)
+
+```bash
+cargo run --bin sos_broadcast
+```
+
+This mode connects to Rocket League Stats API on localhost and hosts a websocket server for overlays/consumers:
+
+- Input: `127.0.0.1:49123` (default RL stats TCP source)
+- Output server bind: `0.0.0.0:49122` (default websocket server)
+
+Connect local consumers to:
+
+```text
+ws://localhost:49122
+```
+
+Show all options:
+
+```bash
+cargo run --bin sos_broadcast -- --help
+```
+
+Behavior note:
+
+- `sos_relay` pushes to a remote websocket endpoint.
+- `sos_broadcast` hosts the websocket endpoint and broadcasts to connected clients.
 
 ## Default Connection and INI Behavior
 

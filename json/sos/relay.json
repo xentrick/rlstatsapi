@@ -1,0 +1,1184 @@
+[
+  { "event": "sos:version", "data": "1.6.0-beta.6-rlstatsapi" },
+  {
+    "event": "game:update_state",
+    "data": {
+      "game": {
+        "arena": "cs_p",
+        "ball": {
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "speed": 0,
+          "team": 255
+        },
+        "hasTarget": true,
+        "hasWinner": false,
+        "isOT": false,
+        "isReplay": false,
+        "target": "nickm",
+        "teams": {
+          "0": {
+            "color_primary": "1873FF",
+            "color_secondary": "E5E5E5",
+            "name": "Blue",
+            "score": 1
+          },
+          "1": {
+            "color_primary": "C26418",
+            "color_secondary": "E5E5E5",
+            "name": "Orange",
+            "score": 0
+          }
+        },
+        "time": 294,
+        "time_seconds": 294,
+        "winner": ""
+      },
+      "hasGame": true,
+      "match_guid": "6952945A11F143FBE1F587BE37901B26",
+      "players": {
+        "Steam|76561197960409023|0": {
+          "assists": 0,
+          "attacker": "",
+          "boost": 33,
+          "cartouches": 0,
+          "demos": 0,
+          "goals": 0,
+          "hasCar": true,
+          "id": "Steam|76561197960409023|0",
+          "isDead": false,
+          "isPowersliding": false,
+          "isSonic": false,
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "name": "nickm",
+          "onGround": true,
+          "onWall": false,
+          "primaryID": "Steam|76561197960409023|0",
+          "saves": 0,
+          "score": 0,
+          "shortcut": 5,
+          "shots": 0,
+          "speed": 0,
+          "team": 1,
+          "touches": 2
+        }
+      }
+    }
+  },
+  {
+    "event": "game:update_state",
+    "data": {
+      "game": {
+        "arena": "cs_p",
+        "ball": {
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "speed": 0,
+          "team": 255
+        },
+        "hasTarget": true,
+        "hasWinner": false,
+        "isOT": false,
+        "isReplay": false,
+        "target": "nickm",
+        "teams": {
+          "0": {
+            "color_primary": "1873FF",
+            "color_secondary": "E5E5E5",
+            "name": "Blue",
+            "score": 1
+          },
+          "1": {
+            "color_primary": "C26418",
+            "color_secondary": "E5E5E5",
+            "name": "Orange",
+            "score": 0
+          }
+        },
+        "time": 294,
+        "time_seconds": 294,
+        "winner": ""
+      },
+      "hasGame": true,
+      "match_guid": "6952945A11F143FBE1F587BE37901B26",
+      "players": {
+        "Steam|76561197960409023|0": {
+          "assists": 0,
+          "attacker": "",
+          "boost": 33,
+          "cartouches": 0,
+          "demos": 0,
+          "goals": 0,
+          "hasCar": true,
+          "id": "Steam|76561197960409023|0",
+          "isDead": false,
+          "isPowersliding": false,
+          "isSonic": false,
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "name": "nickm",
+          "onGround": true,
+          "onWall": false,
+          "primaryID": "Steam|76561197960409023|0",
+          "saves": 0,
+          "score": 0,
+          "shortcut": 5,
+          "shots": 0,
+          "speed": 0,
+          "team": 1,
+          "touches": 2
+        }
+      }
+    }
+  },
+  {
+    "event": "game:update_state",
+    "data": {
+      "game": {
+        "arena": "cs_p",
+        "ball": {
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "speed": 0,
+          "team": 255
+        },
+        "hasTarget": true,
+        "hasWinner": false,
+        "isOT": false,
+        "isReplay": false,
+        "target": "nickm",
+        "teams": {
+          "0": {
+            "color_primary": "1873FF",
+            "color_secondary": "E5E5E5",
+            "name": "Blue",
+            "score": 1
+          },
+          "1": {
+            "color_primary": "C26418",
+            "color_secondary": "E5E5E5",
+            "name": "Orange",
+            "score": 0
+          }
+        },
+        "time": 294,
+        "time_seconds": 294,
+        "winner": ""
+      },
+      "hasGame": true,
+      "match_guid": "6952945A11F143FBE1F587BE37901B26",
+      "players": {
+        "Steam|76561197960409023|0": {
+          "assists": 0,
+          "attacker": "",
+          "boost": 33,
+          "cartouches": 0,
+          "demos": 0,
+          "goals": 0,
+          "hasCar": true,
+          "id": "Steam|76561197960409023|0",
+          "isDead": false,
+          "isPowersliding": false,
+          "isSonic": false,
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "name": "nickm",
+          "onGround": true,
+          "onWall": false,
+          "primaryID": "Steam|76561197960409023|0",
+          "saves": 0,
+          "score": 0,
+          "shortcut": 5,
+          "shots": 0,
+          "speed": 0,
+          "team": 1,
+          "touches": 2
+        }
+      }
+    }
+  },
+  {
+    "event": "relay:unknown",
+    "data": {
+      "source_data": {
+        "MatchGuid": "6952945A11F143FBE1F587BE37901B26",
+        "TimeSeconds": 293,
+        "bOvertime": false
+      },
+      "source_event": "ClockUpdatedSeconds"
+    }
+  },
+  {
+    "event": "game:update_state",
+    "data": {
+      "game": {
+        "arena": "cs_p",
+        "ball": {
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "speed": 0,
+          "team": 255
+        },
+        "hasTarget": true,
+        "hasWinner": false,
+        "isOT": false,
+        "isReplay": false,
+        "target": "nickm",
+        "teams": {
+          "0": {
+            "color_primary": "1873FF",
+            "color_secondary": "E5E5E5",
+            "name": "Blue",
+            "score": 1
+          },
+          "1": {
+            "color_primary": "C26418",
+            "color_secondary": "E5E5E5",
+            "name": "Orange",
+            "score": 0
+          }
+        },
+        "time": 293,
+        "time_seconds": 293,
+        "winner": ""
+      },
+      "hasGame": true,
+      "match_guid": "6952945A11F143FBE1F587BE37901B26",
+      "players": {
+        "Steam|76561197960409023|0": {
+          "assists": 0,
+          "attacker": "",
+          "boost": 33,
+          "cartouches": 0,
+          "demos": 0,
+          "goals": 0,
+          "hasCar": true,
+          "id": "Steam|76561197960409023|0",
+          "isDead": false,
+          "isPowersliding": false,
+          "isSonic": false,
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "name": "nickm",
+          "onGround": true,
+          "onWall": false,
+          "primaryID": "Steam|76561197960409023|0",
+          "saves": 0,
+          "score": 0,
+          "shortcut": 5,
+          "shots": 0,
+          "speed": 0,
+          "team": 1,
+          "touches": 2
+        }
+      }
+    }
+  },
+  {
+    "event": "game:update_state",
+    "data": {
+      "game": {
+        "arena": "cs_p",
+        "ball": {
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "speed": 0,
+          "team": 255
+        },
+        "hasTarget": true,
+        "hasWinner": false,
+        "isOT": false,
+        "isReplay": false,
+        "target": "nickm",
+        "teams": {
+          "0": {
+            "color_primary": "1873FF",
+            "color_secondary": "E5E5E5",
+            "name": "Blue",
+            "score": 1
+          },
+          "1": {
+            "color_primary": "C26418",
+            "color_secondary": "E5E5E5",
+            "name": "Orange",
+            "score": 0
+          }
+        },
+        "time": 293,
+        "time_seconds": 293,
+        "winner": ""
+      },
+      "hasGame": true,
+      "match_guid": "6952945A11F143FBE1F587BE37901B26",
+      "players": {
+        "Steam|76561197960409023|0": {
+          "assists": 0,
+          "attacker": "",
+          "boost": 33,
+          "cartouches": 0,
+          "demos": 0,
+          "goals": 0,
+          "hasCar": true,
+          "id": "Steam|76561197960409023|0",
+          "isDead": false,
+          "isPowersliding": false,
+          "isSonic": false,
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "name": "nickm",
+          "onGround": true,
+          "onWall": false,
+          "primaryID": "Steam|76561197960409023|0",
+          "saves": 0,
+          "score": 0,
+          "shortcut": 5,
+          "shots": 0,
+          "speed": 0,
+          "team": 1,
+          "touches": 2
+        }
+      }
+    }
+  },
+  {
+    "event": "game:update_state",
+    "data": {
+      "game": {
+        "arena": "cs_p",
+        "ball": {
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "speed": 0,
+          "team": 255
+        },
+        "hasTarget": true,
+        "hasWinner": false,
+        "isOT": false,
+        "isReplay": false,
+        "target": "nickm",
+        "teams": {
+          "0": {
+            "color_primary": "1873FF",
+            "color_secondary": "E5E5E5",
+            "name": "Blue",
+            "score": 1
+          },
+          "1": {
+            "color_primary": "C26418",
+            "color_secondary": "E5E5E5",
+            "name": "Orange",
+            "score": 0
+          }
+        },
+        "time": 293,
+        "time_seconds": 293,
+        "winner": ""
+      },
+      "hasGame": true,
+      "match_guid": "6952945A11F143FBE1F587BE37901B26",
+      "players": {
+        "Steam|76561197960409023|0": {
+          "assists": 0,
+          "attacker": "",
+          "boost": 33,
+          "cartouches": 0,
+          "demos": 0,
+          "goals": 0,
+          "hasCar": true,
+          "id": "Steam|76561197960409023|0",
+          "isDead": false,
+          "isPowersliding": false,
+          "isSonic": false,
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "name": "nickm",
+          "onGround": true,
+          "onWall": false,
+          "primaryID": "Steam|76561197960409023|0",
+          "saves": 0,
+          "score": 0,
+          "shortcut": 5,
+          "shots": 0,
+          "speed": 0,
+          "team": 1,
+          "touches": 2
+        }
+      }
+    }
+  },
+  {
+    "event": "game:update_state",
+    "data": {
+      "game": {
+        "arena": "cs_p",
+        "ball": {
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "speed": 0,
+          "team": 255
+        },
+        "hasTarget": true,
+        "hasWinner": false,
+        "isOT": false,
+        "isReplay": false,
+        "target": "nickm",
+        "teams": {
+          "0": {
+            "color_primary": "1873FF",
+            "color_secondary": "E5E5E5",
+            "name": "Blue",
+            "score": 1
+          },
+          "1": {
+            "color_primary": "C26418",
+            "color_secondary": "E5E5E5",
+            "name": "Orange",
+            "score": 0
+          }
+        },
+        "time": 293,
+        "time_seconds": 293,
+        "winner": ""
+      },
+      "hasGame": true,
+      "match_guid": "6952945A11F143FBE1F587BE37901B26",
+      "players": {
+        "Steam|76561197960409023|0": {
+          "assists": 0,
+          "attacker": "",
+          "boost": 33,
+          "cartouches": 0,
+          "demos": 0,
+          "goals": 0,
+          "hasCar": true,
+          "id": "Steam|76561197960409023|0",
+          "isDead": false,
+          "isPowersliding": false,
+          "isSonic": false,
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "name": "nickm",
+          "onGround": true,
+          "onWall": false,
+          "primaryID": "Steam|76561197960409023|0",
+          "saves": 0,
+          "score": 0,
+          "shortcut": 5,
+          "shots": 0,
+          "speed": 0,
+          "team": 1,
+          "touches": 2
+        }
+      }
+    }
+  },
+  {
+    "event": "game:update_state",
+    "data": {
+      "game": {
+        "arena": "cs_p",
+        "ball": {
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "speed": 0,
+          "team": 255
+        },
+        "hasTarget": true,
+        "hasWinner": false,
+        "isOT": false,
+        "isReplay": false,
+        "target": "nickm",
+        "teams": {
+          "0": {
+            "color_primary": "1873FF",
+            "color_secondary": "E5E5E5",
+            "name": "Blue",
+            "score": 1
+          },
+          "1": {
+            "color_primary": "C26418",
+            "color_secondary": "E5E5E5",
+            "name": "Orange",
+            "score": 0
+          }
+        },
+        "time": 293,
+        "time_seconds": 293,
+        "winner": ""
+      },
+      "hasGame": true,
+      "match_guid": "6952945A11F143FBE1F587BE37901B26",
+      "players": {
+        "Steam|76561197960409023|0": {
+          "assists": 0,
+          "attacker": "",
+          "boost": 33,
+          "cartouches": 0,
+          "demos": 0,
+          "goals": 0,
+          "hasCar": true,
+          "id": "Steam|76561197960409023|0",
+          "isDead": false,
+          "isPowersliding": false,
+          "isSonic": false,
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "name": "nickm",
+          "onGround": true,
+          "onWall": false,
+          "primaryID": "Steam|76561197960409023|0",
+          "saves": 0,
+          "score": 0,
+          "shortcut": 5,
+          "shots": 0,
+          "speed": 0,
+          "team": 1,
+          "touches": 2
+        }
+      }
+    }
+  },
+  {
+    "event": "game:update_state",
+    "data": {
+      "game": {
+        "arena": "cs_p",
+        "ball": {
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "speed": 0,
+          "team": 255
+        },
+        "hasTarget": true,
+        "hasWinner": false,
+        "isOT": false,
+        "isReplay": false,
+        "target": "nickm",
+        "teams": {
+          "0": {
+            "color_primary": "1873FF",
+            "color_secondary": "E5E5E5",
+            "name": "Blue",
+            "score": 1
+          },
+          "1": {
+            "color_primary": "C26418",
+            "color_secondary": "E5E5E5",
+            "name": "Orange",
+            "score": 0
+          }
+        },
+        "time": 293,
+        "time_seconds": 293,
+        "winner": ""
+      },
+      "hasGame": true,
+      "match_guid": "6952945A11F143FBE1F587BE37901B26",
+      "players": {
+        "Steam|76561197960409023|0": {
+          "assists": 0,
+          "attacker": "",
+          "boost": 33,
+          "cartouches": 0,
+          "demos": 0,
+          "goals": 0,
+          "hasCar": true,
+          "id": "Steam|76561197960409023|0",
+          "isDead": false,
+          "isPowersliding": false,
+          "isSonic": false,
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "name": "nickm",
+          "onGround": true,
+          "onWall": false,
+          "primaryID": "Steam|76561197960409023|0",
+          "saves": 0,
+          "score": 0,
+          "shortcut": 5,
+          "shots": 0,
+          "speed": 0,
+          "team": 1,
+          "touches": 2
+        }
+      }
+    }
+  },
+  {
+    "event": "game:update_state",
+    "data": {
+      "game": {
+        "arena": "cs_p",
+        "ball": {
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "speed": 0,
+          "team": 255
+        },
+        "hasTarget": true,
+        "hasWinner": false,
+        "isOT": false,
+        "isReplay": false,
+        "target": "nickm",
+        "teams": {
+          "0": {
+            "color_primary": "1873FF",
+            "color_secondary": "E5E5E5",
+            "name": "Blue",
+            "score": 1
+          },
+          "1": {
+            "color_primary": "C26418",
+            "color_secondary": "E5E5E5",
+            "name": "Orange",
+            "score": 0
+          }
+        },
+        "time": 293,
+        "time_seconds": 293,
+        "winner": ""
+      },
+      "hasGame": true,
+      "match_guid": "6952945A11F143FBE1F587BE37901B26",
+      "players": {
+        "Steam|76561197960409023|0": {
+          "assists": 0,
+          "attacker": "",
+          "boost": 33,
+          "cartouches": 0,
+          "demos": 0,
+          "goals": 0,
+          "hasCar": true,
+          "id": "Steam|76561197960409023|0",
+          "isDead": false,
+          "isPowersliding": false,
+          "isSonic": false,
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "name": "nickm",
+          "onGround": true,
+          "onWall": false,
+          "primaryID": "Steam|76561197960409023|0",
+          "saves": 0,
+          "score": 0,
+          "shortcut": 5,
+          "shots": 0,
+          "speed": 0,
+          "team": 1,
+          "touches": 2
+        }
+      }
+    }
+  },
+  {
+    "event": "game:update_state",
+    "data": {
+      "game": {
+        "arena": "cs_p",
+        "ball": {
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "speed": 0,
+          "team": 255
+        },
+        "hasTarget": true,
+        "hasWinner": false,
+        "isOT": false,
+        "isReplay": false,
+        "target": "nickm",
+        "teams": {
+          "0": {
+            "color_primary": "1873FF",
+            "color_secondary": "E5E5E5",
+            "name": "Blue",
+            "score": 1
+          },
+          "1": {
+            "color_primary": "C26418",
+            "color_secondary": "E5E5E5",
+            "name": "Orange",
+            "score": 0
+          }
+        },
+        "time": 293,
+        "time_seconds": 293,
+        "winner": ""
+      },
+      "hasGame": true,
+      "match_guid": "6952945A11F143FBE1F587BE37901B26",
+      "players": {
+        "Steam|76561197960409023|0": {
+          "assists": 0,
+          "attacker": "",
+          "boost": 33,
+          "cartouches": 0,
+          "demos": 0,
+          "goals": 0,
+          "hasCar": true,
+          "id": "Steam|76561197960409023|0",
+          "isDead": false,
+          "isPowersliding": false,
+          "isSonic": false,
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "name": "nickm",
+          "onGround": true,
+          "onWall": false,
+          "primaryID": "Steam|76561197960409023|0",
+          "saves": 0,
+          "score": 0,
+          "shortcut": 5,
+          "shots": 0,
+          "speed": 0,
+          "team": 1,
+          "touches": 2
+        }
+      }
+    }
+  },
+  {
+    "event": "game:update_state",
+    "data": {
+      "game": {
+        "arena": "cs_p",
+        "ball": {
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "speed": 0,
+          "team": 255
+        },
+        "hasTarget": true,
+        "hasWinner": false,
+        "isOT": false,
+        "isReplay": false,
+        "target": "nickm",
+        "teams": {
+          "0": {
+            "color_primary": "1873FF",
+            "color_secondary": "E5E5E5",
+            "name": "Blue",
+            "score": 1
+          },
+          "1": {
+            "color_primary": "C26418",
+            "color_secondary": "E5E5E5",
+            "name": "Orange",
+            "score": 0
+          }
+        },
+        "time": 293,
+        "time_seconds": 293,
+        "winner": ""
+      },
+      "hasGame": true,
+      "match_guid": "6952945A11F143FBE1F587BE37901B26",
+      "players": {
+        "Steam|76561197960409023|0": {
+          "assists": 0,
+          "attacker": "",
+          "boost": 33,
+          "cartouches": 0,
+          "demos": 0,
+          "goals": 0,
+          "hasCar": true,
+          "id": "Steam|76561197960409023|0",
+          "isDead": false,
+          "isPowersliding": false,
+          "isSonic": false,
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "name": "nickm",
+          "onGround": true,
+          "onWall": false,
+          "primaryID": "Steam|76561197960409023|0",
+          "saves": 0,
+          "score": 0,
+          "shortcut": 5,
+          "shots": 0,
+          "speed": 0,
+          "team": 1,
+          "touches": 2
+        }
+      }
+    }
+  },
+  {
+    "event": "game:update_state",
+    "data": {
+      "game": {
+        "arena": "cs_p",
+        "ball": {
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "speed": 0,
+          "team": 255
+        },
+        "hasTarget": true,
+        "hasWinner": false,
+        "isOT": false,
+        "isReplay": false,
+        "target": "nickm",
+        "teams": {
+          "0": {
+            "color_primary": "1873FF",
+            "color_secondary": "E5E5E5",
+            "name": "Blue",
+            "score": 1
+          },
+          "1": {
+            "color_primary": "C26418",
+            "color_secondary": "E5E5E5",
+            "name": "Orange",
+            "score": 0
+          }
+        },
+        "time": 293,
+        "time_seconds": 293,
+        "winner": ""
+      },
+      "hasGame": true,
+      "match_guid": "6952945A11F143FBE1F587BE37901B26",
+      "players": {
+        "Steam|76561197960409023|0": {
+          "assists": 0,
+          "attacker": "",
+          "boost": 33,
+          "cartouches": 0,
+          "demos": 0,
+          "goals": 0,
+          "hasCar": true,
+          "id": "Steam|76561197960409023|0",
+          "isDead": false,
+          "isPowersliding": false,
+          "isSonic": false,
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "name": "nickm",
+          "onGround": true,
+          "onWall": false,
+          "primaryID": "Steam|76561197960409023|0",
+          "saves": 0,
+          "score": 0,
+          "shortcut": 5,
+          "shots": 0,
+          "speed": 0,
+          "team": 1,
+          "touches": 2
+        }
+      }
+    }
+  },
+  {
+    "event": "game:update_state",
+    "data": {
+      "game": {
+        "arena": "cs_p",
+        "ball": {
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "speed": 0,
+          "team": 255
+        },
+        "hasTarget": true,
+        "hasWinner": false,
+        "isOT": false,
+        "isReplay": false,
+        "target": "nickm",
+        "teams": {
+          "0": {
+            "color_primary": "1873FF",
+            "color_secondary": "E5E5E5",
+            "name": "Blue",
+            "score": 1
+          },
+          "1": {
+            "color_primary": "C26418",
+            "color_secondary": "E5E5E5",
+            "name": "Orange",
+            "score": 0
+          }
+        },
+        "time": 293,
+        "time_seconds": 293,
+        "winner": ""
+      },
+      "hasGame": true,
+      "match_guid": "6952945A11F143FBE1F587BE37901B26",
+      "players": {
+        "Steam|76561197960409023|0": {
+          "assists": 0,
+          "attacker": "",
+          "boost": 33,
+          "cartouches": 0,
+          "demos": 0,
+          "goals": 0,
+          "hasCar": true,
+          "id": "Steam|76561197960409023|0",
+          "isDead": false,
+          "isPowersliding": false,
+          "isSonic": false,
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "name": "nickm",
+          "onGround": true,
+          "onWall": false,
+          "primaryID": "Steam|76561197960409023|0",
+          "saves": 0,
+          "score": 0,
+          "shortcut": 5,
+          "shots": 0,
+          "speed": 0,
+          "team": 1,
+          "touches": 2
+        }
+      }
+    }
+  },
+  {
+    "event": "game:update_state",
+    "data": {
+      "game": {
+        "arena": "cs_p",
+        "ball": {
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "speed": 0,
+          "team": 255
+        },
+        "hasTarget": true,
+        "hasWinner": false,
+        "isOT": false,
+        "isReplay": false,
+        "target": "nickm",
+        "teams": {
+          "0": {
+            "color_primary": "1873FF",
+            "color_secondary": "E5E5E5",
+            "name": "Blue",
+            "score": 1
+          },
+          "1": {
+            "color_primary": "C26418",
+            "color_secondary": "E5E5E5",
+            "name": "Orange",
+            "score": 0
+          }
+        },
+        "time": 293,
+        "time_seconds": 293,
+        "winner": ""
+      },
+      "hasGame": true,
+      "match_guid": "6952945A11F143FBE1F587BE37901B26",
+      "players": {
+        "Steam|76561197960409023|0": {
+          "assists": 0,
+          "attacker": "",
+          "boost": 33,
+          "cartouches": 0,
+          "demos": 0,
+          "goals": 0,
+          "hasCar": true,
+          "id": "Steam|76561197960409023|0",
+          "isDead": false,
+          "isPowersliding": false,
+          "isSonic": false,
+          "location": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0,
+            "yaw": 0.0
+          },
+          "name": "nickm",
+          "onGround": true,
+          "onWall": false,
+          "primaryID": "Steam|76561197960409023|0",
+          "saves": 0,
+          "score": 0,
+          "shortcut": 5,
+          "shots": 0,
+          "speed": 0,
+          "team": 1,
+          "touches": 2
+        }
+      }
+    }
+  }
+]
