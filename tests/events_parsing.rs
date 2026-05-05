@@ -110,6 +110,40 @@ fn keeps_unknown_events_for_forward_compatibility() {
 }
 
 #[test]
+fn parses_goal_scored_and_goal_replay_variants() {
+    let goal_scored = parse(
+        "GoalScored",
+        json!({
+            "MatchGuid": "M-123",
+            "ImpactLocation": {"X": 0.1, "Y": 0.2, "Z": 0.0}
+        }),
+    );
+    assert!(matches!(goal_scored, StatsEvent::GoalScored(_)));
+
+    let replay_start =
+        parse("GoalReplayStart", json!({"MatchGuid": "M-123"}));
+    assert!(matches!(replay_start, StatsEvent::GoalReplayStart(_)));
+
+    let replay_start_alias =
+        parse("ReplayStart", json!({"MatchGuid": "M-123"}));
+    assert!(matches!(replay_start_alias, StatsEvent::GoalReplayStart(_)));
+
+    let replay_will_end =
+        parse("GoalReplayWillEnd", json!({"MatchGuid": "M-123"}));
+    assert!(matches!(replay_will_end, StatsEvent::GoalReplayWillEnd(_)));
+
+    let replay_will_end_alias =
+        parse("ReplayWillEnd", json!({"MatchGuid": "M-123"}));
+    assert!(matches!(replay_will_end_alias, StatsEvent::GoalReplayWillEnd(_)));
+
+    let replay_end = parse("GoalReplayEnd", json!({"MatchGuid": "M-123"}));
+    assert!(matches!(replay_end, StatsEvent::GoalReplayEnd(_)));
+
+    let replay_end_alias = parse("ReplayEnd", json!({"MatchGuid": "M-123"}));
+    assert!(matches!(replay_end_alias, StatsEvent::GoalReplayEnd(_)));
+}
+
+#[test]
 fn parses_when_data_is_nested_json_string() {
     let payload =
         r#"{"Event":"RoundStarted","Data":"{\"MatchGuid\":\"ABC123\"}"}"#;

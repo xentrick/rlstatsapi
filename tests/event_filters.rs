@@ -148,6 +148,30 @@ fn match_signal_helpers_detect_goals_and_match_end() {
 }
 
 #[test]
+fn match_signal_keeps_replay_transition_goal_scored() {
+    let transition_goal = parse(
+        "GoalScored",
+        json!({
+            "MatchGuid": "M1",
+            "GoalSpeed": 0.0,
+            "GoalTime": 0,
+            "ImpactLocation": {"X": 0, "Y": 0, "Z": 0},
+            "Scorer": {"Name": "", "Shortcut": 0, "TeamNum": 0},
+            "BallLastTouch": {"Player": {"Name": "Alice", "Shortcut": 1, "TeamNum": 0}}
+        }),
+    );
+
+    match to_match_signal(&transition_goal) {
+        Some(MatchSignal::GoalScored(data)) => {
+            assert_eq!(data.goal_speed, 0.0);
+            assert_eq!(data.goal_time, 0.0);
+            assert_eq!(data.scorer.name, "");
+        }
+        other => panic!("unexpected goal signal: {other:?}"),
+    }
+}
+
+#[test]
 fn nested_car_payload_still_exposes_player_boost_and_speed() {
     let update = parse(
         "UpdateState",

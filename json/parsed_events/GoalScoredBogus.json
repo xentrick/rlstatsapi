@@ -1,0 +1,18 @@
+{
+  "Event": "GoalScored",
+  "Data": {
+    "MatchGuid": "FA65D41E11F148B23539FCB7688033D6",
+    "GoalSpeed": 0.0,
+    "GoalTime": 0,
+    "ImpactLocation": {
+      "X": 712.02734375,
+      "Y": -5334.61181640625,
+      "Z": 92.61934661865235
+    },
+    "Scorer": { "Name": "", "Shortcut": 0, "TeamNum": 0 },
+    "BallLastTouch": {
+      "Player": { "Name": "nickm", "Shortcut": 5, "TeamNum": 1 },
+      "Speed": 90.86030578613281
+    }
+  }
+}

@@ -2,6 +2,7 @@
 name = "rlstatsapi"
 version = "0.1.4"
 edition = "2024"
+autobins = false
 description = "Rocket League Stats API TCP client, parser, and optional Python bindings"
 license = "MIT"
 readme = "README.md"
@@ -43,6 +44,7 @@ crate-type = ["rlib", "cdylib"]
 [features]
 default = []
 python = ["dep:pyo3"]
+dev-tools = []
 
 [workspace]
 members = ["."]
@@ -72,6 +74,36 @@ url = "2.5"
 
 [dev-dependencies]
 criterion = { version = "0.5", features = ["html_reports"] }
+
+
+[[bin]]
+name = "rl_events"
+path = "src/bin/rl_events.rs"
+
+[[bin]]
+name = "sos_broadcast"
+path = "src/bin/sos_broadcast.rs"
+
+[[bin]]
+name = "sos_relay"
+path = "src/bin/sos_relay.rs"
+
+[[bin]]
+name = "player_board"
+path = "src/bin/player_board.rs"
+
+[[bin]]
+name = "raw_events"
+path = "src/bin/raw_events.rs"
+
+[[bin]]
+name = "tick_listener"
+path = "src/bin/tick_listener.rs"
+
+[[bin]]
+name = "mock_broadcast"
+path = "src/bin/mock_broadcast.rs"
+required-features = ["dev-tools"]
 
 [[bench]]
 name = "events_parsing"

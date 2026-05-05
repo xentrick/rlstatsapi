@@ -65,7 +65,7 @@ pub fn translate_stats_event(
                 player.map(|value| value.name.clone()).unwrap_or_default();
             let player_id = player.map(player_ref_id).unwrap_or_default();
             let payload = json!({
-                "match_guid": data.match_guid,
+                "match_guid": normalized_match_guid(data.match_guid.as_deref()),
                 "player": {
                     "name": player_name,
                     "id": player_id,
@@ -86,7 +86,7 @@ pub fn translate_stats_event(
             let event_name =
                 normalize_statfeed_event_name(&data.event_name, &data.type_label);
             let payload = json!({
-                "match_guid": data.match_guid,
+                "match_guid": normalized_match_guid(data.match_guid.as_deref()),
                 "event_name": event_name,
                 "type": data.type_label,
                 "main_target": {
@@ -94,17 +94,15 @@ pub fn translate_stats_event(
                     "id": player_ref_id(&data.main_target),
                     "team_num": data.main_target.team_num,
                 },
-                "secondary_target": data.secondary_target.as_ref().map(|player| {
-                    json!({
-                        "name": player.name,
-                        "id": player_ref_id(player),
-                        "team_num": player.team_num,
-                    })
-                }).unwrap_or(Value::Null),
+                "secondary_target": statfeed_secondary_target(data.secondary_target.as_ref()),
             });
             vec![SosEnvelope::new("game:statfeed_event", payload)]
         }
         StatsEvent::GoalScored(data) => {
+            // GoalScored can show up around replay/transition moments with an
+            // empty scorer and zero speed/time. Keep the event, and let ID
+            // formatting emit an empty SOS id for blank player names.
+
             let assister = data
                 .assister
                 .as_ref()
@@ -120,7 +118,7 @@ pub fn translate_stats_event(
                 );
 
             let payload = json!({
-                "match_guid": data.match_guid,
+                "match_guid": normalized_match_guid(data.match_guid.as_deref()),
                 "goalspeed": round_to_i64(data.goal_speed),
                 "goaltime": data.goal_time,
                 "impact_location": {
@@ -160,7 +158,7 @@ pub fn translate_stats_event(
         }
         StatsEvent::MatchEnded(data) => {
             let payload = json!({
-                "match_guid": data.match_guid,
+                "match_guid": normalized_match_guid(data.match_guid.as_deref()),
                 "winner_team_num": data.winner_team_num,
             });
             vec![SosEnvelope::new("game:match_ended", payload)]
@@ -213,7 +211,19 @@ fn passthrough_envelope(
 
 fn match_guid_payload(data: &MatchOnlyData) -> Value {
     json!({
-        "match_guid": data.match_guid,
+        "match_guid": normalized_match_guid(data.match_guid.as_deref()),
+    })
+}
+
+fn normalized_match_guid(match_guid: Option<&str>) -> Option<&str> {
+    // MatchCreated may arrive with an empty MatchGuid; treat empty values as
+    // missing so downstream can adopt the real guid from MatchInitialized.
+    match_guid.and_then(|guid| {
+        if guid.trim().is_empty() {
+            None
+        } else {
+            Some(guid)
+        }
     })
 }
 
@@ -221,7 +231,7 @@ fn translate_update_state(data: &UpdateStateData) -> Value {
     let players = translate_players(data);
     let teams = translate_teams(&data.game.teams);
     let ball_location =
-        extract_location(&data.game.ball.as_ref().map(|ball| &ball.extra));
+        extract_ball_location(data.game.ball.as_ref().map(|ball| &ball.extra));
     let ball_speed = data
         .game
         .ball
@@ -237,7 +247,7 @@ fn translate_update_state(data: &UpdateStateData) -> Value {
         .unwrap_or(255);
 
     json!({
-        "match_guid": data.match_guid,
+        "match_guid": normalized_match_guid(data.match_guid.as_deref()),
         "hasGame": true,
         "game": {
             "arena": data.game.arena.clone().unwrap_or_default(),
@@ -362,6 +372,21 @@ fn player_ref_id(player: &PlayerRef) -> String {
     format_player_id(&player.name, shortcut)
 }
 
+fn statfeed_secondary_target(target: Option<&PlayerRef>) -> Value {
+    match target {
+        Some(player) => json!({
+            "name": player.name,
+            "id": player_ref_id(player),
+            "team_num": player.team_num,
+        }),
+        None => {
+            // RL Stats API often omits SecondaryTarget entirely. SOS expects an
+            // object here, so emit an explicit empty target with team_num = -1.
+            json!({"name": "", "id": "", "team_num": -1})
+        }
+    }
+}
+
 fn target_ref_value(target: &PlayerRef) -> String {
     if player_ref_shortcut(target).is_some() {
         player_ref_id(target)
@@ -385,7 +410,29 @@ fn player_ref_shortcut(player: &PlayerRef) -> Option<i64> {
 }
 
 fn format_player_id(name: &str, shortcut: i64) -> String {
+    if name.trim().is_empty() {
+        return String::new();
+    }
+
     format!("{name}_{shortcut}")
+}
+
+fn extract_ball_location(extra: Option<&HashMap<String, Value>>) -> Value {
+    let Some(extra) = extra else {
+        return vector3_value(0.0, 0.0, 0.0);
+    };
+
+    if let Some(location) = extra.get("Location").and_then(Value::as_object) {
+        return vector3_from_object(location);
+    }
+
+    if let Some(location) = extra.get("location").and_then(Value::as_object) {
+        return vector3_from_object(location);
+    }
+
+    // Some UpdateState frames include ball speed/team but no location payload.
+    // Emit SOS-compatible origin coordinates when location is missing.
+    vector3_value(0.0, 0.0, 0.0)
 }
 
 fn extract_location(extra: &Option<&HashMap<String, Value>>) -> Value {
@@ -413,6 +460,14 @@ fn location_from_object(object: &Map<String, Value>) -> Value {
     let yaw = value_to_f64(object.get("yaw")).unwrap_or_default();
 
     location_value(x, y, z, pitch, roll, yaw)
+}
+
+fn vector3_from_object(object: &Map<String, Value>) -> Value {
+    let x = value_to_f64(object.get("X")).unwrap_or_default();
+    let y = value_to_f64(object.get("Y")).unwrap_or_default();
+    let z = value_to_f64(object.get("Z")).unwrap_or_default();
+
+    vector3_value(x, y, z)
 }
 
 fn location_value(

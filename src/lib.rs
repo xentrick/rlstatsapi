@@ -15,8 +15,8 @@ pub use config::{
 };
 pub use error::RlStatsError;
 pub use events::{
-    EventEnvelope, StatsEvent, parse_stats_event, parse_stats_event_value,
-    stats_event_name, stats_event_to_value,
+    EventEnvelope, StatsEvent, is_bogus_goal_scored, parse_stats_event,
+    parse_stats_event_value, stats_event_name, stats_event_to_value,
 };
 pub use filters::{
     EventFilter, EventKind, MatchSignal, PlayerSnapshot, PlayerTracker,

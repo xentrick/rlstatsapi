@@ -68,6 +68,17 @@ pub fn stats_event_name(event: &StatsEvent) -> &'static str {
     }
 }
 
+pub fn is_bogus_goal_scored(data: &GoalScoredData) -> bool {
+    let speed_is_zero = data.goal_speed.abs() <= f64::EPSILON;
+    let time_is_zero = data.goal_time.abs() <= f64::EPSILON;
+    let scorer_missing = data.scorer.name.trim().is_empty() && data.scorer.shortcut == 0;
+    let assister_missing = data.assister.as_ref().is_none_or(|assister| {
+        assister.name.trim().is_empty() && assister.shortcut == 0
+    });
+
+    speed_is_zero && time_is_zero && scorer_missing && assister_missing
+}
+
 pub fn stats_event_to_value(event: &StatsEvent) -> Result<Value, RlStatsError> {
     let value = match event {
         StatsEvent::UpdateState(data) => {
@@ -163,13 +174,13 @@ fn parse_event_envelope(
             StatsEvent::CountdownBegin(serde_json::from_value(data)?)
         }
         "CrossbarHit" => StatsEvent::CrossbarHit(serde_json::from_value(data)?),
-        "GoalReplayEnd" => {
+        "GoalReplayEnd" | "ReplayEnd" => {
             StatsEvent::GoalReplayEnd(serde_json::from_value(data)?)
         }
-        "GoalReplayStart" => {
+        "GoalReplayStart" | "ReplayStart" => {
             StatsEvent::GoalReplayStart(serde_json::from_value(data)?)
         }
-        "GoalReplayWillEnd" => {
+        "GoalReplayWillEnd" | "ReplayWillEnd" => {
             StatsEvent::GoalReplayWillEnd(serde_json::from_value(data)?)
         }
         "GoalScored" => StatsEvent::GoalScored(serde_json::from_value(data)?),

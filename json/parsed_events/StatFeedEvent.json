@@ -1,0 +1,10 @@
+{
+  "event": "game:statfeed_event",
+  "data": {
+    "event_name": "Goal",
+    "type": "Goal",
+    "main_target": { "id": "nickm_1", "name": "nickm", "team_num": 0 },
+    "secondary_target": { "id": "", "name": "", "team_num": -1 },
+    "match_guid": "B0093A2011F148B0B5512CB45FFA8FCB"
+  }
+}
