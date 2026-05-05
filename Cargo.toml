@@ -52,6 +52,12 @@ default-members = ["."]
 
 [dependencies]
 dotenvy = "0.15"
+eframe = { version = "0.31", default-features = false, features = [
+    "default_fonts",
+    "glow",
+    "wayland",
+    "x11",
+] }
 futures-util = "0.3"
 pyo3 = { version = "0.23", optional = true, features = [
     "abi3-py311",
@@ -83,6 +89,10 @@ path = "src/bin/rl_events.rs"
 [[bin]]
 name = "sos_broadcast"
 path = "src/bin/sos_broadcast.rs"
+
+[[bin]]
+name = "sos_broadcast_gui"
+path = "src/bin/sos_broadcast_gui.rs"
 
 [[bin]]
 name = "sos_relay"

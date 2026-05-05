@@ -22,4 +22,4 @@ install-path = "CARGO_HOME"
 install-updater = false
 
 [dist.binaries]
-"*" = ["rl_events", "sos_broadcast", "sos_relay"]
+"*" = ["rl_events", "sos_broadcast", "sos_broadcast_gui", "sos_relay"]

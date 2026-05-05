@@ -109,6 +109,17 @@ Behavior note:
 - `sos_relay` pushes to a remote websocket endpoint.
 - `sos_broadcast` hosts the websocket endpoint and broadcasts to connected clients.
 
+### 7) SOS broadcaster GUI (desktop app)
+
+```bash
+cargo run --bin sos_broadcast_gui
+```
+
+Cross-platform desktop GUI (Linux and Windows) for the broadcaster flow:
+
+- Start/stop broadcasting from the window.
+- View live client count, relayed message count, last translated event, and logs.
+
 ## Default Connection and INI Behavior
 
 - If you do not pass an INI path, the client uses localhost defaults (`127.0.0.1:49123`) and does not edit an INI file.
