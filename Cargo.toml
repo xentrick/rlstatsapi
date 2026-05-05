@@ -91,14 +91,17 @@ path = "src/bin/sos_relay.rs"
 [[bin]]
 name = "player_board"
 path = "src/bin/player_board.rs"
+required-features = ["dev-tools"]
 
 [[bin]]
 name = "raw_events"
 path = "src/bin/raw_events.rs"
+required-features = ["dev-tools"]
 
 [[bin]]
 name = "tick_listener"
 path = "src/bin/tick_listener.rs"
+required-features = ["dev-tools"]
 
 [[bin]]
 name = "mock_broadcast"
