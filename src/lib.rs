@@ -1,5 +1,6 @@
 pub mod client;
 pub mod config;
+pub mod console;
 pub mod error;
 pub mod events;
 pub mod filters;

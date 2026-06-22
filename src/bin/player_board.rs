@@ -13,7 +13,18 @@ struct CliOptions {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> std::process::ExitCode {
+    match run().await {
+        Ok(()) => std::process::ExitCode::SUCCESS,
+        Err(error) => {
+            rlstatsapi::console::report_fatal_error(error.as_ref());
+            rlstatsapi::console::pause_before_exit();
+            std::process::ExitCode::FAILURE
+        }
+    }
+}
+
+async fn run() -> Result<(), Box<dyn std::error::Error>> {
     let cli = parse_args()?;
 
     let mut options = ClientOptions::default();
@@ -30,12 +41,26 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         options.port_override = Some(port);
     }
 
+    let requested_host = cli.host.as_deref().unwrap_or("127.0.0.1");
+    let requested_port = cli.port.unwrap_or(49123);
+    eprintln!(
+        "Connecting to RL Stats API at {requested_host}:{requested_port}..."
+    );
+    eprintln!("(waiting for the API — will retry for ~5s)");
+
     let mut client = RocketLeagueStatsClient::connect_with_retry(
         options,
         20,
         Duration::from_millis(250),
     )
-    .await?;
+    .await
+    .map_err(|error| {
+        rlstatsapi::console::explain_connection_failure(
+            requested_host,
+            requested_port,
+            &error,
+        )
+    })?;
 
     let mut last_render =
         Instant::now() - Duration::from_millis(cli.refresh_ms);

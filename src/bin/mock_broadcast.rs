@@ -393,7 +393,18 @@ fn debug_event_log(
 }
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> std::process::ExitCode {
+    match run().await {
+        Ok(()) => std::process::ExitCode::SUCCESS,
+        Err(error) => {
+            rlstatsapi::console::report_fatal_error(error.as_ref());
+            rlstatsapi::console::pause_before_exit();
+            std::process::ExitCode::FAILURE
+        }
+    }
+}
+
+async fn run() -> Result<(), Box<dyn std::error::Error>> {
     let templates = load_template_envelopes()?;
     let parse_outcome = parse_args_from(std::env::args().skip(1))?;
 

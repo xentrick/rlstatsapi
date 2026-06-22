@@ -3,7 +3,18 @@ use std::path::PathBuf;
 use rlstatsapi::{ClientOptions, RocketLeagueStatsClient, StatsEvent};
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> std::process::ExitCode {
+    match run().await {
+        Ok(()) => std::process::ExitCode::SUCCESS,
+        Err(error) => {
+            rlstatsapi::console::report_fatal_error(error.as_ref());
+            rlstatsapi::console::pause_before_exit();
+            std::process::ExitCode::FAILURE
+        }
+    }
+}
+
+async fn run() -> Result<(), Box<dyn std::error::Error>> {
     let mut options = ClientOptions::default();
 
     if let Some(path) = parse_ini_arg()? {
@@ -12,7 +23,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         options.auto_enable_packet_rate = false;
     }
 
-    let mut client = RocketLeagueStatsClient::connect(options).await?;
+    let requested_host = options.host.clone();
+    let requested_port = options.port_override.unwrap_or(49123);
+    let mut client = RocketLeagueStatsClient::connect(options)
+        .await
+        .map_err(|error| {
+            rlstatsapi::console::explain_connection_failure(
+                &requested_host,
+                requested_port,
+                &error,
+            )
+        })?;
 
     println!(
         "Listening on {} (packet_send_rate={}, ini_mutated={})",
