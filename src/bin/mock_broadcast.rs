@@ -202,9 +202,9 @@ impl UpdateStateRandomizer {
         let mut active_payload_by_id = HashMap::<&'static str, Value>::new();
         for (index, player_id) in active_player_ids.iter().enumerate() {
             let attacker = if active_player_ids.len() > 1 && self.chance(1, 4) {
-                let mut idx =
-                    self.range_u64(0, (active_player_ids.len() - 1) as u64)
-                        as usize;
+                let mut idx = self
+                    .range_u64(0, (active_player_ids.len() - 1) as u64)
+                    as usize;
                 if idx == index {
                     idx = (idx + 1) % active_player_ids.len();
                 }
@@ -213,7 +213,13 @@ impl UpdateStateRandomizer {
                 ""
             };
 
-            let (identity_name, identity_id, identity_primary_id, identity_shortcut, identity_team) = {
+            let (
+                identity_name,
+                identity_id,
+                identity_primary_id,
+                identity_shortcut,
+                identity_team,
+            ) = {
                 let identity = self.identity_for(player_id);
                 (
                     identity.name,
@@ -269,10 +275,8 @@ impl UpdateStateRandomizer {
                 continue;
             }
 
-            if let Some(payload) = active_payload_by_id
-                .get(player_id)
-                .cloned()
-                .or_else(|| {
+            if let Some(payload) =
+                active_payload_by_id.get(player_id).cloned().or_else(|| {
                     self.last_player_payload_by_id.get(player_id).cloned()
                 })
             {
@@ -280,7 +284,8 @@ impl UpdateStateRandomizer {
             }
         }
 
-        let has_winner = self.remaining_seconds == 0 && self.blue_score != self.orange_score;
+        let has_winner =
+            self.remaining_seconds == 0 && self.blue_score != self.orange_score;
         let winner = if has_winner {
             if self.blue_score > self.orange_score {
                 "Blue"
@@ -339,10 +344,8 @@ impl UpdateStateRandomizer {
 fn match_guid_for_scenario(scenario: &[SosEnvelope]) -> String {
     for envelope in scenario {
         if envelope.event == "game:update_state"
-            && let Some(guid) = envelope
-                .data
-                .get("match_guid")
-                .and_then(Value::as_str)
+            && let Some(guid) =
+                envelope.data.get("match_guid").and_then(Value::as_str)
         {
             return guid.to_string();
         }
@@ -457,10 +460,7 @@ async fn run(
             .map(|event| event.event.clone())
             .collect::<Vec<_>>()
             .join(", ");
-        debug_log(
-            &cli,
-            format!("scenario event order: [{event_names}]"),
-        );
+        debug_log(&cli, format!("scenario event order: [{event_names}]"));
     }
 
     let (outgoing_tx, _) = broadcast::channel::<String>(1024);
@@ -481,7 +481,8 @@ async fn run(
     let mut sent = 0usize;
     let mut index = 0usize;
 
-    let mut ticker = tokio::time::interval(Duration::from_millis(cli.interval_ms));
+    let mut ticker =
+        tokio::time::interval(Duration::from_millis(cli.interval_ms));
     ticker.set_missed_tick_behavior(MissedTickBehavior::Skip);
 
     loop {
@@ -706,8 +707,8 @@ async fn wait_for_shutdown_signal() -> &'static str {
     }
 }
 
-fn load_template_envelopes(
-) -> Result<Vec<SosEnvelope>, Box<dyn std::error::Error>> {
+fn load_template_envelopes()
+-> Result<Vec<SosEnvelope>, Box<dyn std::error::Error>> {
     let parsed: Vec<TemplateEnvelope> =
         serde_json::from_str(MOCK_ENVELOPES_JSON)?;
 
@@ -737,10 +738,8 @@ fn select_scenario(
     let known: HashSet<String> =
         templates.iter().map(|event| event.event.clone()).collect();
 
-    let mut unknown = wanted
-        .difference(&known)
-        .cloned()
-        .collect::<Vec<String>>();
+    let mut unknown =
+        wanted.difference(&known).cloned().collect::<Vec<String>>();
     unknown.sort_unstable();
 
     if !unknown.is_empty() {
@@ -943,7 +942,10 @@ mod tests {
         let templates = load_template_envelopes().expect("load templates");
         let filtered = select_scenario(
             &templates,
-            &["game:goal_scored".to_string(), "game:replay_start".to_string()],
+            &[
+                "game:goal_scored".to_string(),
+                "game:replay_start".to_string(),
+            ],
         )
         .expect("select scenario");
 
@@ -955,9 +957,8 @@ mod tests {
     #[test]
     fn select_scenario_rejects_unknown_events() {
         let templates = load_template_envelopes().expect("load templates");
-        let error =
-            select_scenario(&templates, &["game:not_real".to_string()])
-                .expect_err("unknown event should fail");
+        let error = select_scenario(&templates, &["game:not_real".to_string()])
+            .expect_err("unknown event should fail");
 
         let message = error.to_string();
         assert!(message.contains("Unknown event filter"));
@@ -1039,7 +1040,8 @@ mod tests {
                     .and_then(Value::as_u64)
                     .expect("player team");
 
-                if let Some((known_name, known_team)) = observed_identity.get(id)
+                if let Some((known_name, known_team)) =
+                    observed_identity.get(id)
                 {
                     assert_eq!(&name, known_name);
                     assert_eq!(&team, known_team);
@@ -1059,8 +1061,10 @@ mod tests {
             .iter()
             .find(|value| value.event == "game:update_state")
             .expect("has update_state template");
-        let mut randomizer =
-            UpdateStateRandomizer::new(123, match_guid_for_scenario(&templates));
+        let mut randomizer = UpdateStateRandomizer::new(
+            123,
+            match_guid_for_scenario(&templates),
+        );
 
         let mut previous_ids = HashSet::<String>::new();
 

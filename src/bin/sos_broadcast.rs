@@ -5,8 +5,8 @@ use std::time::Duration;
 
 use futures_util::{SinkExt, StreamExt};
 use rlstatsapi::{
-    ClientOptions, RocketLeagueStatsClient, stats_event_name,
-    translate_stats_event, SosEnvelope,
+    ClientOptions, RocketLeagueStatsClient, SosEnvelope, stats_event_name,
+    translate_stats_event,
 };
 use serde_json::json;
 use tokio::net::{TcpListener, TcpStream};
@@ -94,8 +94,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
         options.port_override = Some(port);
     }
 
-    let requested_host =
-        cli.rl_host.as_deref().unwrap_or("127.0.0.1");
+    let requested_host = cli.rl_host.as_deref().unwrap_or("127.0.0.1");
     let requested_port = cli.rl_port.unwrap_or(49123);
     eprintln!(
         "Connecting to RL Stats API at {requested_host}:{requested_port}..."

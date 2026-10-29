@@ -9,8 +9,7 @@ use std::time::Duration;
 use eframe::egui::{self, Color32, CornerRadius, Frame, RichText, Stroke};
 use futures_util::{SinkExt, StreamExt};
 use rlstatsapi::{
-    ClientOptions, RocketLeagueStatsClient,
-    translate_stats_event,
+    ClientOptions, RocketLeagueStatsClient, translate_stats_event,
 };
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::{broadcast, watch};
@@ -73,25 +72,30 @@ impl SosBroadcastGuiApp {
         style.spacing.text_edit_width = 260.0;
 
         style.visuals = egui::Visuals::dark();
-        style.visuals.override_text_color = Some(Color32::from_rgb(228, 231, 242));
+        style.visuals.override_text_color =
+            Some(Color32::from_rgb(228, 231, 242));
         style.visuals.panel_fill = Color32::from_rgb(15, 18, 24);
         style.visuals.window_fill = Color32::from_rgb(15, 18, 24);
         style.visuals.faint_bg_color = Color32::from_rgb(23, 28, 36);
         style.visuals.extreme_bg_color = Color32::from_rgb(10, 12, 16);
         style.visuals.selection.bg_fill = Color32::from_rgb(40, 140, 220);
-        style.visuals.selection.stroke = Stroke::new(1.0, Color32::from_rgb(220, 238, 255));
+        style.visuals.selection.stroke =
+            Stroke::new(1.0, Color32::from_rgb(220, 238, 255));
 
-        style.visuals.widgets.noninteractive.bg_fill = Color32::from_rgb(23, 28, 36);
+        style.visuals.widgets.noninteractive.bg_fill =
+            Color32::from_rgb(23, 28, 36);
         style.visuals.widgets.noninteractive.fg_stroke =
             Stroke::new(1.0, Color32::from_rgb(201, 209, 228));
 
         style.visuals.widgets.inactive.bg_fill = Color32::from_rgb(28, 34, 44);
-        style.visuals.widgets.inactive.weak_bg_fill = Color32::from_rgb(20, 25, 32);
+        style.visuals.widgets.inactive.weak_bg_fill =
+            Color32::from_rgb(20, 25, 32);
         style.visuals.widgets.inactive.fg_stroke =
             Stroke::new(1.0, Color32::from_rgb(221, 227, 245));
 
         style.visuals.widgets.hovered.bg_fill = Color32::from_rgb(40, 48, 62);
-        style.visuals.widgets.hovered.weak_bg_fill = Color32::from_rgb(32, 39, 50);
+        style.visuals.widgets.hovered.weak_bg_fill =
+            Color32::from_rgb(32, 39, 50);
         style.visuals.widgets.hovered.fg_stroke =
             Stroke::new(1.0, Color32::from_rgb(236, 240, 255));
         style.visuals.widgets.hovered.bg_stroke =
@@ -176,7 +180,8 @@ impl SosBroadcastGuiApp {
                 worker_tx.clone(),
             ));
 
-            let _ = worker_tx.send(WorkerEvent::Stopped(result.map_err(|e| e.to_string())));
+            let _ = worker_tx
+                .send(WorkerEvent::Stopped(result.map_err(|e| e.to_string())));
         });
 
         self.worker_rx = Some(worker_rx);
@@ -236,7 +241,9 @@ impl SosBroadcastGuiApp {
                         }
                         Err(error) => {
                             self.status = "Error".to_string();
-                            self.push_log(format!("Broadcaster stopped with error: {error}"));
+                            self.push_log(format!(
+                                "Broadcaster stopped with error: {error}"
+                            ));
                         }
                     }
                 }
@@ -468,7 +475,7 @@ impl eframe::App for SosBroadcastGuiApp {
                     .inner_margin(egui::Margin::same(OUTER_MARGIN))
                     .show(ui, |ui| {
                         self.render_hero_banner(ui);
-                });
+                    });
             });
 
         egui::CentralPanel::default()
@@ -647,12 +654,9 @@ async fn run_broadcast_worker(
         ),
     );
 
-    let Some(mut client) = connect_client_with_shutdown(
-        options,
-        &mut shutdown_rx,
-        &event_tx,
-    )
-    .await?
+    let Some(mut client) =
+        connect_client_with_shutdown(options, &mut shutdown_rx, &event_tx)
+            .await?
     else {
         emit_log(&event_tx, "Startup cancelled".to_string());
         return Ok(());
@@ -662,10 +666,7 @@ async fn run_broadcast_worker(
     let bind_address = format!("{}:{}", config.ws_host, config.ws_port);
     let listener = TcpListener::bind(&bind_address).await?;
 
-    emit_log(
-        &event_tx,
-        format!("Connected to RL Stats API at {source}"),
-    );
+    emit_log(&event_tx, format!("Connected to RL Stats API at {source}"));
 
     let (outgoing_tx, _) = broadcast::channel::<String>(1024);
     let (accept_shutdown_tx, accept_shutdown_rx) = watch::channel(false);

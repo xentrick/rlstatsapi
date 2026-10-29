@@ -38,7 +38,7 @@ fn update_state_translation_uses_sos_shape_and_player_ids() {
     assert_eq!(payload["game"]["teams"][0]["name"], "Blue");
     assert_eq!(payload["game"]["teams"][1]["score"], 1);
     assert_eq!(payload["game"]["ball"]["team"], 1);
-        assert_eq!(payload["game"]["target"], "nickm_1");
+    assert_eq!(payload["game"]["target"], "nickm_1");
 
     assert_eq!(payload["players"]["nickm_1"]["name"], "nickm");
     assert_eq!(payload["players"]["Zone Killa_5"]["name"], "Zone Killa");
@@ -46,52 +46,52 @@ fn update_state_translation_uses_sos_shape_and_player_ids() {
 
 #[test]
 fn update_state_target_falls_back_to_name_without_shortcut() {
-        let event_json = json!({
-            "Event": "UpdateState",
-            "Data": {
-                "MatchGuid": "M-Target-1",
-                "Game": {
-                    "Teams": [],
-                    "bHasTarget": true,
-                    "Target": {
-                        "Name": "Ball",
-                        "TeamNum": 0
-                    }
+    let event_json = json!({
+        "Event": "UpdateState",
+        "Data": {
+            "MatchGuid": "M-Target-1",
+            "Game": {
+                "Teams": [],
+                "bHasTarget": true,
+                "Target": {
+                    "Name": "Ball",
+                    "TeamNum": 0
                 }
             }
-        });
+        }
+    });
 
-        let event =
-                parse_stats_event(&event_json.to_string()).expect("event should parse");
-        let envelopes =
-                translate_stats_event(&event).expect("translation should succeed");
+    let event =
+        parse_stats_event(&event_json.to_string()).expect("event should parse");
+    let envelopes =
+        translate_stats_event(&event).expect("translation should succeed");
 
-        assert_eq!(envelopes.len(), 1);
-        assert_eq!(envelopes[0].event, "game:update_state");
-        assert_eq!(envelopes[0].data["game"]["target"], "Ball");
+    assert_eq!(envelopes.len(), 1);
+    assert_eq!(envelopes[0].event, "game:update_state");
+    assert_eq!(envelopes[0].data["game"]["target"], "Ball");
 }
 
 #[test]
 fn update_state_target_defaults_to_empty_string_when_missing() {
-        let event_json = json!({
-            "Event": "UpdateState",
-            "Data": {
-                "MatchGuid": "M-Target-2",
-                "Game": {
-                    "Teams": [],
-                    "bHasTarget": false
-                }
+    let event_json = json!({
+        "Event": "UpdateState",
+        "Data": {
+            "MatchGuid": "M-Target-2",
+            "Game": {
+                "Teams": [],
+                "bHasTarget": false
             }
-        });
+        }
+    });
 
-        let event =
-                parse_stats_event(&event_json.to_string()).expect("event should parse");
-        let envelopes =
-                translate_stats_event(&event).expect("translation should succeed");
+    let event =
+        parse_stats_event(&event_json.to_string()).expect("event should parse");
+    let envelopes =
+        translate_stats_event(&event).expect("translation should succeed");
 
-        assert_eq!(envelopes.len(), 1);
-        assert_eq!(envelopes[0].event, "game:update_state");
-        assert_eq!(envelopes[0].data["game"]["target"], "");
+    assert_eq!(envelopes.len(), 1);
+    assert_eq!(envelopes[0].event, "game:update_state");
+    assert_eq!(envelopes[0].data["game"]["target"], "");
 }
 
 #[test]
@@ -126,29 +126,29 @@ fn goal_scored_translation_uses_sos_field_names() {
 
 #[test]
 fn ball_hit_translation_uses_player_ref_id_format() {
-        let event_json = json!({
-            "Event": "BallHit",
-            "Data": {
-                "MatchGuid": "M-BH-1",
-                "Players": [
-                    {"Name": "A", "Shortcut": 7, "TeamNum": 0}
-                ],
-                "Ball": {
-                    "PreHitSpeed": 980.0,
-                    "PostHitSpeed": 1520.0,
-                    "Location": {"X": 1.0, "Y": 2.0, "Z": 3.0}
-                }
+    let event_json = json!({
+        "Event": "BallHit",
+        "Data": {
+            "MatchGuid": "M-BH-1",
+            "Players": [
+                {"Name": "A", "Shortcut": 7, "TeamNum": 0}
+            ],
+            "Ball": {
+                "PreHitSpeed": 980.0,
+                "PostHitSpeed": 1520.0,
+                "Location": {"X": 1.0, "Y": 2.0, "Z": 3.0}
             }
-        });
+        }
+    });
 
-        let event =
-                parse_stats_event(&event_json.to_string()).expect("event should parse");
-        let envelopes =
-                translate_stats_event(&event).expect("translation should succeed");
+    let event =
+        parse_stats_event(&event_json.to_string()).expect("event should parse");
+    let envelopes =
+        translate_stats_event(&event).expect("translation should succeed");
 
-        assert_eq!(envelopes.len(), 1);
-        assert_eq!(envelopes[0].event, "game:ball_hit");
-        assert_eq!(envelopes[0].data["player"]["id"], "A_7");
+    assert_eq!(envelopes.len(), 1);
+    assert_eq!(envelopes[0].event, "game:ball_hit");
+    assert_eq!(envelopes[0].data["player"]["id"], "A_7");
 }
 
 #[test]
@@ -300,21 +300,21 @@ fn unknown_passthrough_preserves_source_event_name_and_data() {
 
 #[test]
 fn replay_will_end_alias_translates_to_sos_replay_will_end() {
-        let event_json = json!({
-            "Event": "ReplayWillEnd",
-            "Data": {
-                "MatchGuid": "M-RWE-1"
-            }
-        });
+    let event_json = json!({
+        "Event": "ReplayWillEnd",
+        "Data": {
+            "MatchGuid": "M-RWE-1"
+        }
+    });
 
-        let event =
-                parse_stats_event(&event_json.to_string()).expect("event should parse");
-        let envelopes =
-                translate_stats_event(&event).expect("translation should succeed");
+    let event =
+        parse_stats_event(&event_json.to_string()).expect("event should parse");
+    let envelopes =
+        translate_stats_event(&event).expect("translation should succeed");
 
-        assert_eq!(envelopes.len(), 1);
-        assert_eq!(envelopes[0].event, "game:replay_will_end");
-        assert_eq!(envelopes[0].data["match_guid"], "M-RWE-1");
+    assert_eq!(envelopes.len(), 1);
+    assert_eq!(envelopes[0].event, "game:replay_will_end");
+    assert_eq!(envelopes[0].data["match_guid"], "M-RWE-1");
 }
 
 #[test]
@@ -344,8 +344,8 @@ fn replay_start_and_end_aliases_translate_to_sos_replay_events() {
 
     let replay_end_event = parse_stats_event(&replay_end_json.to_string())
         .expect("event should parse");
-    let replay_end_envelopes =
-        translate_stats_event(&replay_end_event).expect("translation should succeed");
+    let replay_end_envelopes = translate_stats_event(&replay_end_event)
+        .expect("translation should succeed");
 
     assert_eq!(replay_end_envelopes.len(), 1);
     assert_eq!(replay_end_envelopes[0].event, "game:replay_end");

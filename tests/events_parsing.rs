@@ -120,8 +120,7 @@ fn parses_goal_scored_and_goal_replay_variants() {
     );
     assert!(matches!(goal_scored, StatsEvent::GoalScored(_)));
 
-    let replay_start =
-        parse("GoalReplayStart", json!({"MatchGuid": "M-123"}));
+    let replay_start = parse("GoalReplayStart", json!({"MatchGuid": "M-123"}));
     assert!(matches!(replay_start, StatsEvent::GoalReplayStart(_)));
 
     let replay_start_alias =
@@ -134,7 +133,10 @@ fn parses_goal_scored_and_goal_replay_variants() {
 
     let replay_will_end_alias =
         parse("ReplayWillEnd", json!({"MatchGuid": "M-123"}));
-    assert!(matches!(replay_will_end_alias, StatsEvent::GoalReplayWillEnd(_)));
+    assert!(matches!(
+        replay_will_end_alias,
+        StatsEvent::GoalReplayWillEnd(_)
+    ));
 
     let replay_end = parse("GoalReplayEnd", json!({"MatchGuid": "M-123"}));
     assert!(matches!(replay_end, StatsEvent::GoalReplayEnd(_)));

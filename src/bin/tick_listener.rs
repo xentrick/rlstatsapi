@@ -25,15 +25,16 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
 
     let requested_host = options.host.clone();
     let requested_port = options.port_override.unwrap_or(49123);
-    let mut client = RocketLeagueStatsClient::connect(options)
-        .await
-        .map_err(|error| {
-            rlstatsapi::console::explain_connection_failure(
-                &requested_host,
-                requested_port,
-                &error,
-            )
-        })?;
+    let mut client =
+        RocketLeagueStatsClient::connect(options)
+            .await
+            .map_err(|error| {
+                rlstatsapi::console::explain_connection_failure(
+                    &requested_host,
+                    requested_port,
+                    &error,
+                )
+            })?;
 
     println!(
         "Listening on {} (packet_send_rate={}, ini_mutated={})",

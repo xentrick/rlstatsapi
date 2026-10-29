@@ -71,7 +71,8 @@ pub fn stats_event_name(event: &StatsEvent) -> &'static str {
 pub fn is_bogus_goal_scored(data: &GoalScoredData) -> bool {
     let speed_is_zero = data.goal_speed.abs() <= f64::EPSILON;
     let time_is_zero = data.goal_time.abs() <= f64::EPSILON;
-    let scorer_missing = data.scorer.name.trim().is_empty() && data.scorer.shortcut == 0;
+    let scorer_missing =
+        data.scorer.name.trim().is_empty() && data.scorer.shortcut == 0;
     let assister_missing = data.assister.as_ref().is_none_or(|assister| {
         assister.name.trim().is_empty() && assister.shortcut == 0
     });

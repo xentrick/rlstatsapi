@@ -83,8 +83,10 @@ pub fn translate_stats_event(
             vec![SosEnvelope::new("game:ball_hit", payload)]
         }
         StatsEvent::StatfeedEvent(data) => {
-            let event_name =
-                normalize_statfeed_event_name(&data.event_name, &data.type_label);
+            let event_name = normalize_statfeed_event_name(
+                &data.event_name,
+                &data.type_label,
+            );
             let payload = json!({
                 "match_guid": normalized_match_guid(data.match_guid.as_deref()),
                 "event_name": event_name,
@@ -396,8 +398,7 @@ fn target_ref_value(target: &PlayerRef) -> String {
 }
 
 fn player_ref_shortcut(player: &PlayerRef) -> Option<i64> {
-    if let Some(shortcut) =
-        first_i64(&player.extra, &["Shortcut", "shortcut"])
+    if let Some(shortcut) = first_i64(&player.extra, &["Shortcut", "shortcut"])
     {
         return Some(shortcut);
     }
@@ -499,9 +500,9 @@ fn vector3_value(x: f64, y: f64, z: f64) -> Value {
 fn first_i64(map: &HashMap<String, Value>, keys: &[&str]) -> Option<i64> {
     keys.iter().find_map(|key| {
         map.get(*key).and_then(|value| {
-            value
-                .as_i64()
-                .or_else(|| value.as_str().and_then(|text| text.parse::<i64>().ok()))
+            value.as_i64().or_else(|| {
+                value.as_str().and_then(|text| text.parse::<i64>().ok())
+            })
         })
     })
 }
@@ -522,7 +523,8 @@ fn round_to_i64(value: f64) -> i64 {
 
 fn normalize_statfeed_event_name(event_name: &str, type_label: &str) -> String {
     if event_name.eq_ignore_ascii_case("demolition")
-        || (event_name.is_empty() && type_label.eq_ignore_ascii_case("demolish"))
+        || (event_name.is_empty()
+            && type_label.eq_ignore_ascii_case("demolish"))
     {
         "Demolish".to_string()
     } else {

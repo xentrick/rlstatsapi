@@ -47,7 +47,11 @@ pub fn pause_before_exit() {
 
 /// Build an actionable message for a failed connection to the RL Stats API,
 /// including the underlying error and the usual things to check.
-pub fn explain_connection_failure(host: &str, port: u16, err: &dyn Error) -> String {
+pub fn explain_connection_failure(
+    host: &str,
+    port: u16,
+    err: &dyn Error,
+) -> String {
     format!(
         "Could not connect to the RL Stats API at {host}:{port} after multiple retries (~5s).\n\
          Underlying error: {err}\n\
