@@ -1,4 +1,6 @@
-use criterion::{Criterion, black_box, criterion_group, criterion_main};
+use std::hint::black_box;
+
+use criterion::{Criterion, criterion_group, criterion_main};
 use rlstatsapi::parse_stats_event;
 
 const UPDATE_STATE_PAYLOAD: &str = r#"{

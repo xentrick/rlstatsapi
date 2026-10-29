@@ -127,22 +127,22 @@ impl EventFilter {
             }
         }
 
-        if let Some(expected_team) = self.team_num {
-            if !event_has_team(event, expected_team) {
-                return false;
-            }
+        if let Some(expected_team) = self.team_num
+            && !event_has_team(event, expected_team)
+        {
+            return false;
         }
 
-        if let Some(expected_name) = self.player_name.as_deref() {
-            if !event_has_player_name(event, expected_name) {
-                return false;
-            }
+        if let Some(expected_name) = self.player_name.as_deref()
+            && !event_has_player_name(event, expected_name)
+        {
+            return false;
         }
 
-        if let Some(expected_primary_id) = self.player_primary_id.as_deref() {
-            if !event_has_player_primary_id(event, expected_primary_id) {
-                return false;
-            }
+        if let Some(expected_primary_id) = self.player_primary_id.as_deref()
+            && !event_has_player_primary_id(event, expected_primary_id)
+        {
+            return false;
         }
 
         true

@@ -34,6 +34,13 @@ Tracks the Rocket League Stats API changes from game patches v2.72 (2026-08-04) 
 - Since v2.76, `GoalScored` also fires during replay playback and carries no replay flag. To tell replay goals apart, check the latest `UpdateState` `Game.bReplay`.
 - Live captures (private match and LAN, 2026-10-29) confirmed the `PlayerJoined`/`PlayerLeft` payloads plus `Loadout`, `PickupClass` and `PlaylistId`, with no unmodelled fields. `PickupClass` and loadout slots use the string `"None"` for empty. `BoostPickup` never fired in those sessions, so its payload is still unverified and comes from the documentation tables.
 
+### Dependencies
+
+- Minimum supported Rust version is now 1.95, which egui 0.37 requires.
+- eframe 0.31 → 0.37: the GUI is ported to the new `App::ui` / `Panel` / global-style API.
+- pyo3 0.23 → 0.30, tokio-tungstenite 0.24 → 0.30, criterion 0.5 → 0.8 (dev), tokio 1.44 → 1.54. Other dependencies moved to their latest compatible releases.
+- Release tooling: dist 0.31 → 0.32, and the workflow was regenerated with newer artifact actions. `actions/checkout` v4 → v7 in CI.
+
 ### Tooling
 
 - Added a repository `rustfmt.toml` and reformatted the crate.

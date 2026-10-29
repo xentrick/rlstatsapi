@@ -65,7 +65,7 @@ struct SosBroadcastGuiApp {
 
 impl SosBroadcastGuiApp {
     fn new(cc: &eframe::CreationContext<'_>) -> Self {
-        let mut style = (*cc.egui_ctx.style()).clone();
+        let mut style = (*cc.egui_ctx.global_style()).clone();
         style.spacing.item_spacing = egui::vec2(10.0, 10.0);
         style.spacing.button_padding = egui::vec2(14.0, 7.0);
         style.spacing.interact_size.y = 28.0;
@@ -116,7 +116,7 @@ impl SosBroadcastGuiApp {
         style.visuals.widgets.hovered.corner_radius = CornerRadius::same(8);
         style.visuals.widgets.active.corner_radius = CornerRadius::same(8);
         style.visuals.widgets.open.corner_radius = CornerRadius::same(8);
-        cc.egui_ctx.set_style(style);
+        cc.egui_ctx.set_global_style(style);
 
         Self {
             running: false,
@@ -461,16 +461,16 @@ impl Drop for SosBroadcastGuiApp {
 }
 
 impl eframe::App for SosBroadcastGuiApp {
-    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+    fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         self.drain_events();
 
         if self.running {
-            ctx.request_repaint_after(Duration::from_millis(100));
+            ui.ctx().request_repaint_after(Duration::from_millis(100));
         }
 
-        egui::TopBottomPanel::top("header")
+        egui::Panel::top("header")
             .frame(Frame::default().fill(Color32::from_rgb(13, 16, 22)))
-            .show(ctx, |ui| {
+            .show(ui, |ui| {
                 Frame::default()
                     .inner_margin(egui::Margin::same(OUTER_MARGIN))
                     .show(ui, |ui| {
@@ -480,7 +480,7 @@ impl eframe::App for SosBroadcastGuiApp {
 
         egui::CentralPanel::default()
             .frame(Frame::default().fill(Color32::from_rgb(15, 18, 24)))
-            .show(ctx, |ui| {
+            .show(ui, |ui| {
                 Frame::default()
                     .inner_margin(egui::Margin::same(OUTER_MARGIN))
                     .show(ui, |ui| {
@@ -875,7 +875,7 @@ async fn handle_client(
             outgoing = outgoing_rx.recv() => {
                 match outgoing {
                     Ok(payload) => {
-                        if let Err(error) = writer.send(Message::Text(payload)).await {
+                        if let Err(error) = writer.send(Message::Text(payload.into())).await {
                             emit_debug(
                                 &config,
                                 &event_tx,
@@ -1165,10 +1165,10 @@ fn has_wayland_env() -> bool {
 
 #[cfg(target_os = "linux")]
 fn is_wsl() -> bool {
-    if let Ok(value) = std::env::var("WSL_DISTRO_NAME") {
-        if !value.trim().is_empty() {
-            return true;
-        }
+    if let Ok(value) = std::env::var("WSL_DISTRO_NAME")
+        && !value.trim().is_empty()
+    {
+        return true;
     }
 
     if let Ok(version) = std::fs::read_to_string("/proc/version") {

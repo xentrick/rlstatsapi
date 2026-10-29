@@ -309,7 +309,7 @@ async fn send_envelope_with_retry(
             ),
         );
 
-        match ws_stream.send(Message::Text(payload.clone())).await {
+        match ws_stream.send(Message::Text(payload.clone().into())).await {
             Ok(()) => {
                 debug_log(cli, format!("envelope '{}' sent", envelope.event));
                 return Ok(());

@@ -223,13 +223,7 @@ fn match_guid_payload(data: &MatchOnlyData) -> Value {
 fn normalized_match_guid(match_guid: Option<&str>) -> Option<&str> {
     // MatchCreated may arrive with an empty MatchGuid; treat empty values as
     // missing so downstream can adopt the real guid from MatchInitialized.
-    match_guid.and_then(|guid| {
-        if guid.trim().is_empty() {
-            None
-        } else {
-            Some(guid)
-        }
-    })
+    match_guid.filter(|guid| !guid.trim().is_empty())
 }
 
 fn translate_update_state(data: &UpdateStateData) -> Value {

@@ -267,10 +267,10 @@ fn find_u16_value(contents: &str, key: &str) -> Option<u16> {
 
 fn find_string_value(contents: &str, key: &str) -> Option<String> {
     for line in contents.lines() {
-        if let Some((lhs, rhs, _indent)) = split_key_value(line) {
-            if lhs.eq_ignore_ascii_case(key) {
-                return Some(rhs.to_string());
-            }
+        if let Some((lhs, rhs, _indent)) = split_key_value(line)
+            && lhs.eq_ignore_ascii_case(key)
+        {
+            return Some(rhs.to_string());
         }
     }
     None
@@ -281,12 +281,12 @@ fn upsert_key(contents: &str, key: &str, value: &str) -> String {
     let mut output_lines = Vec::new();
 
     for line in contents.lines() {
-        if let Some((lhs, _rhs, indent)) = split_key_value(line) {
-            if lhs.eq_ignore_ascii_case(key) {
-                output_lines.push(format!("{indent}{key}={value}"));
-                found = true;
-                continue;
-            }
+        if let Some((lhs, _rhs, indent)) = split_key_value(line)
+            && lhs.eq_ignore_ascii_case(key)
+        {
+            output_lines.push(format!("{indent}{key}={value}"));
+            found = true;
+            continue;
         }
         output_lines.push(line.to_string());
     }

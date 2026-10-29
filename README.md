@@ -19,7 +19,7 @@ Rust client and parser for Rocket League Stats API event streams over TCP, with 
 
 ## Requirements
 
-- Rust toolchain (stable).
+- Rust 1.95 or newer (stable).
 - Python 3.11+ (only needed for Python bindings and examples).
 - Rocket League Stats API exporter enabled and sending to `127.0.0.1:49123` (default).
 

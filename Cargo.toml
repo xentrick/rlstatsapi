@@ -17,7 +17,7 @@ categories = [
     "parser-implementations",
     "game-development",
 ]
-rust-version = "1.85"
+rust-version = "1.95"
 exclude = [
     ".env",
     ".env.*",
@@ -51,22 +51,22 @@ members = ["."]
 default-members = ["."]
 
 [dependencies]
-dotenvy = "0.15"
-eframe = { version = "0.31", default-features = false, features = [
+dotenvy = "0.15.7"
+eframe = { version = "0.37", default-features = false, features = [
     "default_fonts",
     "glow",
     "wayland",
     "x11",
 ] }
-futures-util = "0.3"
-pyo3 = { version = "0.23", optional = true, features = [
+futures-util = "0.3.34"
+pyo3 = { version = "0.30", optional = true, features = [
     "abi3-py311",
     "extension-module",
 ] }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-thiserror = "2.0"
-tokio = { version = "1.44", features = [
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+thiserror = "2.0.21"
+tokio = { version = "1.54", features = [
     "macros",
     "rt-multi-thread",
     "time",
@@ -75,11 +75,11 @@ tokio = { version = "1.44", features = [
     "sync",
     "signal",
 ] }
-tokio-tungstenite = "0.24"
-url = "2.5"
+tokio-tungstenite = "0.30"
+url = "2.5.8"
 
 [dev-dependencies]
-criterion = { version = "0.5", features = ["html_reports"] }
+criterion = { version = "0.8", features = ["html_reports"] }
 
 
 [[bin]]
