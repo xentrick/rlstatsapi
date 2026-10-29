@@ -48,6 +48,9 @@ class RLStatsStream:
     def close(self) -> None:
         self._client.close()
 
+    def send_command(self, command: dict[str, Any]) -> None:
+        self._client.send_command_json(json.dumps(command))
+
     def next_event(self) -> ParsedEvent | None:
         raw = self._client.next_event_json()
         if raw is None:

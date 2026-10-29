@@ -39,6 +39,20 @@ Offline verification example (no live game required):
 uv run verify_filter_bindings.py
 ```
 
+## Sending Commands to the Game
+
+Commands use the Stats API wire shape (`{"Command": ..., "Data": {...}}`) and are validated before they are sent, because the game silently ignores malformed commands:
+
+```python
+stream = RLStatsStream()
+stream.connect()
+stream.send_command({"Command": "SetMatchPaused", "Data": {"bPaused": True}})
+```
+
+- `RocketLeagueStatsClient.send_command_json(raw_json)`
+- `RLStatsStream.send_command(command_dict)`
+- `rlstatsapi.list_command_names()`: `ChangePOV`, `LoadReplay`, `SeekReplay`, `SetGameSpeed`, `SetHUDVisibility`, `SetMatchPaused`
+
 ## Python Filtering API
 
 Client-side filtered polling:
@@ -53,4 +67,6 @@ Module-level filtering helpers:
 - `rlstatsapi.event_matches(...)`
 - `rlstatsapi.filter_event_json(...)`
 - `rlstatsapi.match_signal_json(...)`
-- `rlstatsapi.winner_team(...)`
+- `rlstatsapi.winner_team(...)` (returns `-1` for a no-contest match on game v2.76+)
+
+`list_event_kinds()` includes the game v2.72 events `boost_pickup`, `player_joined` and `player_left`.

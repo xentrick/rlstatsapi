@@ -2,7 +2,10 @@ use std::fs;
 use std::path::PathBuf;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use rlstatsapi::{ClientOptions, DEFAULT_PORT, prepare_connection_config};
+use rlstatsapi::{
+    ClientOptions, DEFAULT_PORT, DEFAULT_WEB_PORT, RlStatsError,
+    prepare_connection_config,
+};
 
 fn temp_ini_path(test_name: &str) -> PathBuf {
     let nanos = SystemTime::now()
@@ -144,6 +147,7 @@ fn creates_ini_file_when_path_does_not_exist() {
     );
     assert!(contents.contains("PacketSendRate=60"));
     assert!(contents.contains("Port=49123"));
+    assert!(contents.contains("WebPort=49124"));
 
     let _ = fs::remove_file(path);
 }
@@ -188,4 +192,74 @@ fn uses_localhost_defaults_when_ini_not_provided() {
     assert_eq!(result.packet_send_rate, 60.0);
     assert!(result.ini_path.is_none());
     assert!(!result.ini_mutated);
+}
+
+#[test]
+fn reads_web_port_from_ini() {
+    let path = temp_ini_path("read_web_port");
+    fs::write(&path, "PacketSendRate=30\nPort=49123\nWebPort=49200\n")
+        .expect("write test ini");
+
+    let options = ClientOptions {
+        stats_api_ini_path: Some(path.clone()),
+        ..ClientOptions::default()
+    };
+
+    let result =
+        prepare_connection_config(&options).expect("prepare connection config");
+
+    assert_eq!(result.web_port, 49200);
+    assert!(!result.ini_mutated);
+
+    let _ = fs::remove_file(path);
+}
+
+#[test]
+fn defaults_web_port_when_missing() {
+    let options = ClientOptions {
+        auto_enable_packet_rate: false,
+        ..ClientOptions::default()
+    };
+
+    let result =
+        prepare_connection_config(&options).expect("prepare connection config");
+
+    assert_eq!(result.web_port, DEFAULT_WEB_PORT);
+}
+
+#[test]
+fn rejects_port_matching_web_port() {
+    let options = ClientOptions {
+        port_override: Some(DEFAULT_WEB_PORT),
+        auto_enable_packet_rate: false,
+        ..ClientOptions::default()
+    };
+
+    let error = prepare_connection_config(&options)
+        .expect_err("port equal to web port should be rejected");
+
+    assert!(matches!(
+        error,
+        RlStatsError::PortConflict { port } if port == DEFAULT_WEB_PORT
+    ));
+}
+
+#[test]
+fn allows_port_matching_web_port_when_web_port_disabled() {
+    let path = temp_ini_path("web_port_disabled");
+    fs::write(&path, "PacketSendRate=30\nPort=49124\nWebPort=0\n")
+        .expect("write test ini");
+
+    let options = ClientOptions {
+        stats_api_ini_path: Some(path.clone()),
+        ..ClientOptions::default()
+    };
+
+    let result =
+        prepare_connection_config(&options).expect("prepare connection config");
+
+    assert_eq!(result.port, 49124);
+    assert_eq!(result.web_port, 0);
+
+    let _ = fs::remove_file(path);
 }

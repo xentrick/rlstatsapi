@@ -8,6 +8,7 @@ fn variant_name(event: &StatsEvent) -> &'static str {
     match event {
         StatsEvent::UpdateState(_) => "UpdateState",
         StatsEvent::BallHit(_) => "BallHit",
+        StatsEvent::BoostPickup(_) => "BoostPickup",
         StatsEvent::ClockUpdatedSeconds(_) => "ClockUpdatedSeconds",
         StatsEvent::CountdownBegin(_) => "CountdownBegin",
         StatsEvent::CrossbarHit(_) => "CrossbarHit",
@@ -21,11 +22,14 @@ fn variant_name(event: &StatsEvent) -> &'static str {
         StatsEvent::MatchEnded(_) => "MatchEnded",
         StatsEvent::MatchPaused(_) => "MatchPaused",
         StatsEvent::MatchUnpaused(_) => "MatchUnpaused",
+        StatsEvent::PlayerJoined(_) => "PlayerJoined",
+        StatsEvent::PlayerLeft(_) => "PlayerLeft",
         StatsEvent::PodiumStart(_) => "PodiumStart",
         StatsEvent::ReplayCreated(_) => "ReplayCreated",
         StatsEvent::RoundStarted(_) => "RoundStarted",
         StatsEvent::StatfeedEvent(_) => "StatfeedEvent",
         StatsEvent::Unknown(_) => "Unknown",
+        _ => panic!("variant_name is missing a StatsEvent variant"),
     }
 }
 
@@ -65,6 +69,7 @@ fn parses_all_documented_event_variants() {
             "BallHit",
             json!({"Ball": {"Location": {"X": 0, "Y": 0, "Z": 0}}}),
         ),
+        ("BoostPickup", json!({})),
         ("ClockUpdatedSeconds", json!({})),
         ("CountdownBegin", json!({})),
         (
@@ -84,6 +89,8 @@ fn parses_all_documented_event_variants() {
         ("MatchEnded", json!({})),
         ("MatchPaused", json!({})),
         ("MatchUnpaused", json!({})),
+        ("PlayerJoined", json!({})),
+        ("PlayerLeft", json!({})),
         ("PodiumStart", json!({})),
         ("ReplayCreated", json!({})),
         ("RoundStarted", json!({})),
@@ -166,6 +173,7 @@ fn parses_generated_parsed_event_fixtures() {
         "UpdateState.json",
         "BallHit.json",
         "ClockUpdatedSeconds.json",
+        "DocumentedV272Events.json",
     ];
 
     for file_name in fixture_files {
@@ -211,5 +219,84 @@ fn parsed_update_state_player_fixtures_cover_multiple_players() {
                 other => panic!("expected UpdateState fixture, got {other:?}"),
             }
         }
+    }
+}
+
+#[test]
+fn parses_v2_72_event_payload_fields() {
+    let events: Vec<StatsEvent> =
+        read_fixture_events("DocumentedV272Events.json")
+            .into_iter()
+            .map(|value| {
+                parse_stats_event(&value.to_string())
+                    .expect("fixture should parse")
+            })
+            .collect();
+
+    match &events[0] {
+        StatsEvent::BoostPickup(data) => {
+            assert_eq!(data.player.name, "nickm");
+            assert_eq!(data.boost_amount, 100.0);
+            assert_eq!(data.boost_type, "BoostType_Pill");
+            assert!(!data.b_replay);
+            assert_eq!(data.location.x, -3072.0);
+        }
+        other => panic!("expected BoostPickup, got {other:?}"),
+    }
+
+    match &events[1] {
+        StatsEvent::PlayerJoined(data) => {
+            assert_eq!(data.player_name, "Zone Killa");
+            assert_eq!(data.primary_id, "Steam|76561198000000000|0");
+        }
+        other => panic!("expected PlayerJoined, got {other:?}"),
+    }
+
+    match &events[3] {
+        StatsEvent::ReplayCreated(data) => {
+            assert_eq!(data.file_name, "Stadium_P_2026-06-05_18-42");
+            assert_eq!(data.date, "2026-06-05 18:42:10");
+            assert!(data.extra.is_empty());
+        }
+        other => panic!("expected ReplayCreated, got {other:?}"),
+    }
+
+    match &events[4] {
+        StatsEvent::MatchEnded(data) => {
+            assert_eq!(data.winner_team_num, -1);
+            assert!(data.is_no_contest());
+        }
+        other => panic!("expected MatchEnded, got {other:?}"),
+    }
+
+    match &events[5] {
+        StatsEvent::UpdateState(data) => {
+            let player = &data.players[0];
+            assert_eq!(
+                player.loadout.as_deref(),
+                Some(
+                    &[
+                        "Octane".to_string(),
+                        "Cristiano".to_string(),
+                        "OEM".to_string()
+                    ][..]
+                )
+            );
+            assert_eq!(
+                player.pickup_class.as_deref(),
+                Some("SpecialPickup_BallFreeze")
+            );
+            assert!(!player.extra.contains_key("Loadout"));
+            assert_eq!(data.game.playlist_id, Some(11));
+        }
+        other => panic!("expected UpdateState, got {other:?}"),
+    }
+}
+
+#[test]
+fn match_ended_with_winner_is_not_no_contest() {
+    match parse("MatchEnded", json!({"WinnerTeamNum": 0})) {
+        StatsEvent::MatchEnded(data) => assert!(!data.is_no_contest()),
+        other => panic!("expected MatchEnded, got {other:?}"),
     }
 }

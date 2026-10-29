@@ -300,7 +300,7 @@ async fn handle_client(
             outgoing = outgoing_rx.recv() => {
                 match outgoing {
                     Ok(payload) => {
-                        if let Err(error) = writer.send(Message::Text(payload.into())).await {
+                        if let Err(error) = writer.send(Message::Text(payload)).await {
                             debug_log(&cli, format!("send error for {peer}: {error}"));
                             break;
                         }

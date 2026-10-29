@@ -1,0 +1,84 @@
+[
+  {
+    "Event": "BoostPickup",
+    "Data": {
+      "MatchGuid": "FA65D41E11F148B23539FCB7688033D6",
+      "Player": { "Name": "nickm", "Shortcut": 5, "TeamNum": 1 },
+      "Location": { "X": -3072.0, "Y": 4096.0, "Z": 73.0 },
+      "BoostAmount": 100,
+      "BoostType": "BoostType_Pill",
+      "bReplay": false
+    }
+  },
+  {
+    "Event": "PlayerJoined",
+    "Data": {
+      "MatchGuid": "FA65D41E11F148B23539FCB7688033D6",
+      "PlayerName": "Zone Killa",
+      "PrimaryId": "Steam|76561198000000000|0"
+    }
+  },
+  {
+    "Event": "PlayerLeft",
+    "Data": {
+      "MatchGuid": "FA65D41E11F148B23539FCB7688033D6",
+      "PlayerName": "Zone Killa",
+      "PrimaryId": "Steam|76561198000000000|0"
+    }
+  },
+  {
+    "Event": "ReplayCreated",
+    "Data": {
+      "MatchGuid": "FA65D41E11F148B23539FCB7688033D6",
+      "FileName": "Stadium_P_2026-06-05_18-42",
+      "Date": "2026-06-05 18:42:10"
+    }
+  },
+  {
+    "Event": "MatchEnded",
+    "Data": {
+      "MatchGuid": "FA65D41E11F148B23539FCB7688033D6",
+      "WinnerTeamNum": -1
+    }
+  },
+  {
+    "Event": "UpdateState",
+    "Data": {
+      "MatchGuid": "FA65D41E11F148B23539FCB7688033D6",
+      "Players": [
+        {
+          "Name": "nickm",
+          "PrimaryId": "Epic|abc123|0",
+          "Shortcut": 5,
+          "TeamNum": 1,
+          "Score": 120,
+          "Goals": 1,
+          "Shots": 2,
+          "Assists": 0,
+          "Saves": 0,
+          "Touches": 9,
+          "CarTouches": 1,
+          "Demos": 0,
+          "Loadout": ["Octane", "Cristiano", "OEM"],
+          "Boost": 33,
+          "PickupClass": "SpecialPickup_BallFreeze"
+        }
+      ],
+      "Game": {
+        "Teams": [
+          { "Name": "Blue", "TeamNum": 0, "Score": 0, "ColorPrimary": "1873FF", "ColorSecondary": "E5E5E5" },
+          { "Name": "Orange", "TeamNum": 1, "Score": 1, "ColorPrimary": "C26418", "ColorSecondary": "E5E5E5" }
+        ],
+        "PlaylistId": 11,
+        "TimeSeconds": 241,
+        "bOvertime": false,
+        "Ball": { "Speed": 0, "TeamNum": 255 },
+        "bReplay": false,
+        "bHasWinner": false,
+        "Winner": "",
+        "Arena": "Stadium_P",
+        "bHasTarget": false
+      }
+    }
+  }
+]

@@ -423,14 +423,14 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
             return Ok(());
         }
         ParseOutcome::Run(cli) => {
-            run(cli, templates).await?;
+            run_server(cli, templates).await?;
         }
     }
 
     Ok(())
 }
 
-async fn run(
+async fn run_server(
     cli: CliOptions,
     templates: Vec<SosEnvelope>,
 ) -> Result<(), Box<dyn std::error::Error>> {
@@ -635,7 +635,7 @@ async fn handle_client(
             outgoing = outgoing_rx.recv() => {
                 match outgoing {
                     Ok(payload) => {
-                        if let Err(error) = writer.send(Message::Text(payload.into())).await {
+                        if let Err(error) = writer.send(Message::Text(payload)).await {
                             debug_log(&cli, format!("send error for {peer}: {error}"));
                             break;
                         }

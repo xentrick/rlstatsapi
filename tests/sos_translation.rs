@@ -385,3 +385,72 @@ fn replay_transition_goal_scored_with_empty_scorer_is_kept() {
     assert_eq!(envelopes[0].data["goalspeed"], 0);
     assert_eq!(envelopes[0].data["goaltime"], 0.0);
 }
+
+#[test]
+fn replay_created_translation_includes_file_name_and_date() {
+    let event = parse_stats_event(
+        &json!({
+            "Event": "ReplayCreated",
+            "Data": {
+                "MatchGuid": "M-3",
+                "FileName": "Stadium_P_2026-06-05_18-42",
+                "Date": "2026-06-05 18:42:10"
+            }
+        })
+        .to_string(),
+    )
+    .expect("event should parse");
+    let envelopes =
+        translate_stats_event(&event).expect("translation should succeed");
+
+    assert_eq!(envelopes.len(), 1);
+    assert_eq!(envelopes[0].event, "game:replay_created");
+    assert_eq!(envelopes[0].data["match_guid"], "M-3");
+    assert_eq!(envelopes[0].data["file_name"], "Stadium_P_2026-06-05_18-42");
+    assert_eq!(envelopes[0].data["date"], "2026-06-05 18:42:10");
+}
+
+#[test]
+fn match_ended_translation_flags_no_contest() {
+    let no_contest = parse_stats_event(
+        &json!({"Event": "MatchEnded", "Data": {"WinnerTeamNum": -1}})
+            .to_string(),
+    )
+    .expect("event should parse");
+    let won = parse_stats_event(
+        &json!({"Event": "MatchEnded", "Data": {"WinnerTeamNum": 1}})
+            .to_string(),
+    )
+    .expect("event should parse");
+
+    let no_contest = translate_stats_event(&no_contest).expect("translate");
+    let won = translate_stats_event(&won).expect("translate");
+
+    assert_eq!(no_contest[0].event, "game:match_ended");
+    assert_eq!(no_contest[0].data["winner_team_num"], -1);
+    assert_eq!(no_contest[0].data["no_contest"], true);
+    assert_eq!(won[0].data["no_contest"], false);
+}
+
+#[test]
+fn boost_pickup_passes_through_unchanged() {
+    let event = parse_stats_event(
+        &json!({
+            "Event": "BoostPickup",
+            "Data": {
+                "Player": {"Name": "Alice", "Shortcut": 1, "TeamNum": 0},
+                "BoostAmount": 12,
+                "BoostType": "BoostType_Pad",
+                "bReplay": false
+            }
+        })
+        .to_string(),
+    )
+    .expect("event should parse");
+    let envelopes =
+        translate_stats_event(&event).expect("translation should succeed");
+
+    assert_eq!(envelopes.len(), 1);
+    assert_eq!(envelopes[0].event, "BoostPickup");
+    assert_eq!(envelopes[0].data["BoostType"], "BoostType_Pad");
+}

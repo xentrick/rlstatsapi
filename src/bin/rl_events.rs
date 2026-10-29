@@ -300,7 +300,7 @@ fn print_pretty_event(event: &StatsEvent) {
         StatsEvent::MatchEnded(data) => {
             println!(
                 "[{ts}] MATCH_ENDED winner_team={} match={}",
-                data.winner_team_num,
+                winner_label(data),
                 data.match_guid.as_deref().unwrap_or("-")
             );
         }
@@ -316,6 +316,34 @@ fn print_pretty_event(event: &StatsEvent) {
                 data.event_name,
                 data.main_target.name,
                 secondary
+            );
+        }
+        StatsEvent::BoostPickup(data) => {
+            println!(
+                "[{ts}] BOOST player={} team={} amount={} type={} replay={}",
+                data.player.name,
+                data.player.team_num,
+                data.boost_amount,
+                data.boost_type,
+                data.b_replay
+            );
+        }
+        StatsEvent::PlayerJoined(data) => {
+            println!(
+                "[{ts}] PLAYER_JOINED name={} id={}",
+                data.player_name, data.primary_id
+            );
+        }
+        StatsEvent::PlayerLeft(data) => {
+            println!(
+                "[{ts}] PLAYER_LEFT name={} id={}",
+                data.player_name, data.primary_id
+            );
+        }
+        StatsEvent::ReplayCreated(data) => {
+            println!(
+                "[{ts}] REPLAY_CREATED file={} date={}",
+                data.file_name, data.date
             );
         }
         StatsEvent::Unknown(data) => {
@@ -341,7 +369,7 @@ fn print_compact_event(event: &StatsEvent) {
         StatsEvent::MatchEnded(data) => {
             println!(
                 "[{ts}] MATCH_ENDED winner_team={} match={}",
-                data.winner_team_num,
+                winner_label(data),
                 data.match_guid.as_deref().unwrap_or("-")
             );
         }
@@ -356,6 +384,14 @@ fn print_compact_event(event: &StatsEvent) {
         other => {
             println!("[{ts}] {}", stats_event_name(other));
         }
+    }
+}
+
+fn winner_label(data: &rlstatsapi::events::MatchEndedData) -> String {
+    if data.is_no_contest() {
+        "none (no contest)".to_string()
+    } else {
+        data.winner_team_num.to_string()
     }
 }
 
@@ -563,6 +599,7 @@ fn event_kind_from_token(token: &str) -> Option<EventKind> {
             Some(EventKind::UpdateState)
         }
         "ball_hit" | "ballhit" => Some(EventKind::BallHit),
+        "boost_pickup" | "boost" => Some(EventKind::BoostPickup),
         "clock_updated_seconds" | "clock" => {
             Some(EventKind::ClockUpdatedSeconds)
         }
@@ -580,6 +617,8 @@ fn event_kind_from_token(token: &str) -> Option<EventKind> {
         "match_unpaused" | "unpaused" | "unpause" => {
             Some(EventKind::MatchUnpaused)
         }
+        "player_joined" | "joined" => Some(EventKind::PlayerJoined),
+        "player_left" | "left" => Some(EventKind::PlayerLeft),
         "podium_start" => Some(EventKind::PodiumStart),
         "replay_created" => Some(EventKind::ReplayCreated),
         "round_started" | "round" => Some(EventKind::RoundStarted),
@@ -593,6 +632,7 @@ fn event_kind_name(kind: EventKind) -> &'static str {
     match kind {
         EventKind::UpdateState => "update_state",
         EventKind::BallHit => "ball_hit",
+        EventKind::BoostPickup => "boost_pickup",
         EventKind::ClockUpdatedSeconds => "clock_updated_seconds",
         EventKind::CountdownBegin => "countdown_begin",
         EventKind::CrossbarHit => "crossbar_hit",
@@ -606,6 +646,8 @@ fn event_kind_name(kind: EventKind) -> &'static str {
         EventKind::MatchEnded => "match_ended",
         EventKind::MatchPaused => "match_paused",
         EventKind::MatchUnpaused => "match_unpaused",
+        EventKind::PlayerJoined => "player_joined",
+        EventKind::PlayerLeft => "player_left",
         EventKind::PodiumStart => "podium_start",
         EventKind::ReplayCreated => "replay_created",
         EventKind::RoundStarted => "round_started",
@@ -616,7 +658,7 @@ fn event_kind_name(kind: EventKind) -> &'static str {
 
 fn print_help() {
     println!(
-        "Usage: pretty_events [options]\n\nParse and filter Rocket League Stats API events from stream or stdin.\n\nInput:\n  --stdin                Read JSON events from stdin (one JSON object per line)\n  --strict-stdin         Same as --stdin, but fail on first invalid JSON line\n\nConnection (stream mode):\n  --ini <path>           Optional DefaultStatsAPI.ini path\n  --host <host>          Override host (default 127.0.0.1)\n  --port <port>          Override port (default 49123)\n\nFiltering:\n  --event <a,b,c>        Event kind filter list (use --list-events)\n  --player <name>        Match events involving player name\n  --player-id <id>       Match events involving player primary id\n  --team <num>           Match events involving team number\n  --match <guid>         Match events for specific match guid\n\nOutput:\n  --format <kind>        pretty | compact | json\n  --max-events <n>       Stop after emitting n matching events\n  --list-events          Print available event names\n  --list-formats         Print available output formats\n\nExamples:\n  pretty_events --event goal,match_ended\n  pretty_events --event update_state --player SomePlayer --format compact\n  cat events.jsonl | pretty_events --stdin --event goal --format json"
+        "Usage: pretty_events [options]\n\nParse and filter Rocket League Stats API events from stream or stdin.\n\nInput:\n  --stdin                Read JSON events from stdin (one JSON object per line)\n  --strict-stdin         Same as --stdin, but fail on first invalid JSON line\n\nConnection (stream mode):\n  --ini <path>           Optional TAStatsAPI.ini path\n  --host <host>          Override host (default 127.0.0.1)\n  --port <port>          Override port (default 49123)\n\nFiltering:\n  --event <a,b,c>        Event kind filter list (use --list-events)\n  --player <name>        Match events involving player name\n  --player-id <id>       Match events involving player primary id\n  --team <num>           Match events involving team number\n  --match <guid>         Match events for specific match guid\n\nOutput:\n  --format <kind>        pretty | compact | json\n  --max-events <n>       Stop after emitting n matching events\n  --list-events          Print available event names\n  --list-formats         Print available output formats\n\nExamples:\n  pretty_events --event goal,match_ended\n  pretty_events --event update_state --player SomePlayer --format compact\n  cat events.jsonl | pretty_events --stdin --event goal --format json"
     );
 }
 
@@ -624,6 +666,7 @@ fn print_event_list() {
     let events = [
         EventKind::UpdateState,
         EventKind::BallHit,
+        EventKind::BoostPickup,
         EventKind::ClockUpdatedSeconds,
         EventKind::CountdownBegin,
         EventKind::CrossbarHit,
@@ -637,6 +680,8 @@ fn print_event_list() {
         EventKind::MatchEnded,
         EventKind::MatchPaused,
         EventKind::MatchUnpaused,
+        EventKind::PlayerJoined,
+        EventKind::PlayerLeft,
         EventKind::PodiumStart,
         EventKind::ReplayCreated,
         EventKind::RoundStarted,

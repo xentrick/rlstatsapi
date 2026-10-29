@@ -9,6 +9,7 @@ use crate::events::{
 pub enum EventKind {
     UpdateState,
     BallHit,
+    BoostPickup,
     ClockUpdatedSeconds,
     CountdownBegin,
     CrossbarHit,
@@ -22,6 +23,8 @@ pub enum EventKind {
     MatchEnded,
     MatchPaused,
     MatchUnpaused,
+    PlayerJoined,
+    PlayerLeft,
     PodiumStart,
     ReplayCreated,
     RoundStarted,
@@ -34,6 +37,7 @@ impl From<&StatsEvent> for EventKind {
         match value {
             StatsEvent::UpdateState(_) => Self::UpdateState,
             StatsEvent::BallHit(_) => Self::BallHit,
+            StatsEvent::BoostPickup(_) => Self::BoostPickup,
             StatsEvent::ClockUpdatedSeconds(_) => Self::ClockUpdatedSeconds,
             StatsEvent::CountdownBegin(_) => Self::CountdownBegin,
             StatsEvent::CrossbarHit(_) => Self::CrossbarHit,
@@ -47,6 +51,8 @@ impl From<&StatsEvent> for EventKind {
             StatsEvent::MatchEnded(_) => Self::MatchEnded,
             StatsEvent::MatchPaused(_) => Self::MatchPaused,
             StatsEvent::MatchUnpaused(_) => Self::MatchUnpaused,
+            StatsEvent::PlayerJoined(_) => Self::PlayerJoined,
+            StatsEvent::PlayerLeft(_) => Self::PlayerLeft,
             StatsEvent::PodiumStart(_) => Self::PodiumStart,
             StatsEvent::ReplayCreated(_) => Self::ReplayCreated,
             StatsEvent::RoundStarted(_) => Self::RoundStarted,
@@ -233,14 +239,14 @@ impl PlayerTracker {
 
 #[derive(Debug, Clone)]
 pub enum MatchSignal {
-    GoalScored(GoalScoredData),
+    GoalScored(Box<GoalScoredData>),
     MatchConcluded(MatchEndedData),
 }
 
 pub fn to_match_signal(event: &StatsEvent) -> Option<MatchSignal> {
     match event {
         StatsEvent::GoalScored(data) => {
-            Some(MatchSignal::GoalScored(data.clone()))
+            Some(MatchSignal::GoalScored(Box::new(data.clone())))
         }
         StatsEvent::MatchEnded(data) => {
             Some(MatchSignal::MatchConcluded(data.clone()))
@@ -260,6 +266,7 @@ fn event_match_guid(event: &StatsEvent) -> Option<&str> {
     match event {
         StatsEvent::UpdateState(data) => data.match_guid.as_deref(),
         StatsEvent::BallHit(data) => data.match_guid.as_deref(),
+        StatsEvent::BoostPickup(data) => data.match_guid.as_deref(),
         StatsEvent::ClockUpdatedSeconds(data) => data.match_guid.as_deref(),
         StatsEvent::CountdownBegin(data) => data.match_guid.as_deref(),
         StatsEvent::CrossbarHit(data) => data.match_guid.as_deref(),
@@ -273,6 +280,8 @@ fn event_match_guid(event: &StatsEvent) -> Option<&str> {
         StatsEvent::MatchEnded(data) => data.match_guid.as_deref(),
         StatsEvent::MatchPaused(data) => data.match_guid.as_deref(),
         StatsEvent::MatchUnpaused(data) => data.match_guid.as_deref(),
+        StatsEvent::PlayerJoined(data) => data.match_guid.as_deref(),
+        StatsEvent::PlayerLeft(data) => data.match_guid.as_deref(),
         StatsEvent::PodiumStart(data) => data.match_guid.as_deref(),
         StatsEvent::ReplayCreated(data) => data.match_guid.as_deref(),
         StatsEvent::RoundStarted(data) => data.match_guid.as_deref(),
@@ -310,6 +319,7 @@ fn event_has_team(event: &StatsEvent, expected_team: i64) -> bool {
             .players
             .iter()
             .any(|player| player.team_num == expected_team),
+        StatsEvent::BoostPickup(data) => data.player.team_num == expected_team,
         StatsEvent::StatfeedEvent(data) => {
             data.main_target.team_num == expected_team
                 || data
@@ -345,6 +355,12 @@ fn event_has_player_name(event: &StatsEvent, expected_name: &str) -> bool {
             .players
             .iter()
             .any(|player| player.name.eq_ignore_ascii_case(expected_name)),
+        StatsEvent::BoostPickup(data) => {
+            data.player.name.eq_ignore_ascii_case(expected_name)
+        }
+        StatsEvent::PlayerJoined(data) | StatsEvent::PlayerLeft(data) => {
+            data.player_name.eq_ignore_ascii_case(expected_name)
+        }
         StatsEvent::StatfeedEvent(data) => {
             data.main_target.name.eq_ignore_ascii_case(expected_name)
                 || data.secondary_target.as_ref().is_some_and(|target| {
@@ -366,6 +382,9 @@ fn event_has_player_primary_id(
                 .as_deref()
                 .is_some_and(|primary_id| primary_id == expected_primary_id)
         }),
+        StatsEvent::PlayerJoined(data) | StatsEvent::PlayerLeft(data) => {
+            data.primary_id == expected_primary_id
+        }
         _ => false,
     }
 }

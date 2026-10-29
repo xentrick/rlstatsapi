@@ -58,7 +58,8 @@ pub fn explain_connection_failure(
          \n\
          Common causes:\n\
          - Rocket League is not running. Start the game first, then relaunch this tool.\n\
-         - The in-game Stats API exporter is not enabled. Check DefaultStatsAPI.ini:\n\
+         - The in-game Stats API exporter is not enabled. Check TAStatsAPI.ini\n\
+         \x20  (the game only reads DefaultStatsAPI.ini when TAStatsAPI.ini is missing):\n\
          \x20    [TAGame.MatchStatsExporter_TA]\n\
          \x20    Port={port}\n\
          \x20    PacketSendRate=60   ; must be greater than 0\n\

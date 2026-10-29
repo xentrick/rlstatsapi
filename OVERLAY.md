@@ -15,17 +15,25 @@ This guide explains how to download the newest `rlstatsapi` release for your OS,
 
 ## 2) Configure Packet Send Rate (60)
 
-Set this in your Rocket League Stats API INI file:
+Create or edit `TAStatsAPI.ini` in your Rocket League config folder:
 
 ```ini
 [TAGame.MatchStatsExporter_TA]
 Port=49123
+WebPort=49124
 PacketSendRate=60
 ```
 
-Typical Windows Steam path:
+Typical Windows paths:
 
-- `C:\Program Files (x86)\Steam\steamapps\common\rocketleague\TAGame\Config\DefaultStatsAPI.ini`
+- Steam: `C:\Program Files (x86)\Steam\steamapps\common\rocketleague\TAGame\Config\TAStatsAPI.ini`
+- Epic: `C:\Program Files\Epic Games\rocketleague\TAGame\Config\TAStatsAPI.ini`
+
+Notes:
+
+- The game reads `TAStatsAPI.ini` first and only uses `DefaultStatsAPI.ini` when it is missing. Settings in `DefaultStatsAPI.ini` are ignored if a `TAStatsAPI.ini` exists.
+- `Port` and `WebPort` must be different numbers.
+- Restart Rocket League after editing; it only reads the file at startup.
 
 ## 3) Start SOS Broadcast Server
 

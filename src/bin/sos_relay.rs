@@ -218,13 +218,13 @@ async fn reconnect_rl_with_backoff(
 
     for attempt in 1..=10 {
         debug_log(
-            &cli,
+            cli,
             format!("attempting RL reconnect (attempt {attempt}/10)"),
         );
         match client.reconnect().await {
             Ok(()) => {
                 debug_log(
-                    &cli,
+                    cli,
                     format!(
                         "RL reconnect succeeded; source={} ",
                         client.connection().socket_address()
@@ -234,7 +234,7 @@ async fn reconnect_rl_with_backoff(
             }
             Err(error) => {
                 debug_log(
-                    &cli,
+                    cli,
                     format!(
                         "RL reconnect failed on attempt {attempt}/10: {error}"
                     ),
@@ -309,7 +309,7 @@ async fn send_envelope_with_retry(
             ),
         );
 
-        match ws_stream.send(Message::Text(payload.clone().into())).await {
+        match ws_stream.send(Message::Text(payload.clone())).await {
             Ok(()) => {
                 debug_log(cli, format!("envelope '{}' sent", envelope.event));
                 return Ok(());

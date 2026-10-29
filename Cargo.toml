@@ -3,7 +3,7 @@ name = "rlstatsapi"
 version = "0.1.7"
 edition = "2024"
 autobins = false
-description = "Rocket League Stats API TCP client, parser, and optional Python bindings"
+description = "Rocket League Stats API TCP client, parser, command sender, and optional Python bindings"
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/xentrick/rlstatsapi"
@@ -111,6 +111,11 @@ required-features = ["dev-tools"]
 [[bin]]
 name = "tick_listener"
 path = "src/bin/tick_listener.rs"
+required-features = ["dev-tools"]
+
+[[bin]]
+name = "rl_command"
+path = "src/bin/rl_command.rs"
 required-features = ["dev-tools"]
 
 [[bin]]

@@ -234,3 +234,44 @@ fn nested_car_payload_still_exposes_player_boost_and_speed() {
     assert_eq!(snapshot.boost, Some(33));
     assert_eq!(snapshot.speed, Some(1320.0));
 }
+
+#[test]
+fn event_filter_matches_v2_72_player_events() {
+    let boost = parse(
+        "BoostPickup",
+        json!({
+            "MatchGuid": "M1",
+            "Player": {"Name": "Alice", "Shortcut": 1, "TeamNum": 0},
+            "BoostAmount": 12,
+            "BoostType": "BoostType_Pad"
+        }),
+    );
+    let joined = parse(
+        "PlayerJoined",
+        json!({"MatchGuid": "M1", "PlayerName": "Bob", "PrimaryId": "Epic|b|0"}),
+    );
+    let left = parse(
+        "PlayerLeft",
+        json!({"MatchGuid": "M1", "PlayerName": "Bob", "PrimaryId": "Epic|b|0"}),
+    );
+
+    assert_eq!(EventKind::from(&boost), EventKind::BoostPickup);
+    assert_eq!(EventKind::from(&joined), EventKind::PlayerJoined);
+    assert_eq!(EventKind::from(&left), EventKind::PlayerLeft);
+
+    let by_team = EventFilter::new().with_team_num(0);
+    assert!(by_team.matches(&boost));
+    assert!(!EventFilter::new().with_team_num(1).matches(&boost));
+
+    let by_name = EventFilter::new().with_player_name("bob");
+    assert!(by_name.matches(&joined));
+    assert!(by_name.matches(&left));
+    assert!(!by_name.matches(&boost));
+
+    let by_id = EventFilter::new().with_player_primary_id("Epic|b|0");
+    assert!(by_id.matches(&joined));
+
+    let by_match = EventFilter::new().with_match_guid("M1");
+    assert!(by_match.matches(&boost));
+    assert!(by_match.matches(&left));
+}

@@ -162,6 +162,7 @@ pub fn translate_stats_event(
             let payload = json!({
                 "match_guid": normalized_match_guid(data.match_guid.as_deref()),
                 "winner_team_num": data.winner_team_num,
+                "no_contest": data.is_no_contest(),
             });
             vec![SosEnvelope::new("game:match_ended", payload)]
         }
@@ -178,10 +179,12 @@ pub fn translate_stats_event(
             )]
         }
         StatsEvent::ReplayCreated(data) => {
-            vec![SosEnvelope::new(
-                "game:replay_created",
-                match_guid_payload(data),
-            )]
+            let payload = json!({
+                "match_guid": normalized_match_guid(data.match_guid.as_deref()),
+                "file_name": data.file_name,
+                "date": data.date,
+            });
+            vec![SosEnvelope::new("game:replay_created", payload)]
         }
         StatsEvent::RoundStarted(_) => {
             vec![SosEnvelope::new(

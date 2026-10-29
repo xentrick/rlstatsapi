@@ -9,6 +9,7 @@ Rust client and parser for Rocket League Stats API event streams over TCP, with 
 
 - TCP client with reconnect support for Rocket League Stats API events.
 - Typed event parsing (`StatsEvent`) with support for unknown/forward-compatible events.
+- Typed, locally validated game commands (`StatsCommand`): camera POV, replay load/seek, game speed, HUD visibility, pause.
 - Event filtering and player/match tracking helpers (`EventFilter`, `PlayerTracker`, `MatchSignal`).
 - Config helpers for optional Stats API INI handling.
 - CLI binaries for raw, compact tick, and pretty filtered output.
@@ -29,24 +30,46 @@ cargo build
 cargo test
 ```
 
-## Binaries
-
-### 1) Raw event dump
+The same checks CI runs:
 
 ```bash
-cargo run --bin raw_events
+cargo fmt --check
+cargo build --all-targets --features dev-tools
+cargo clippy --all-targets --features python,dev-tools -- -D warnings
+cargo test --features dev-tools
+```
+
+Formatting uses the repository `rustfmt.toml` (stable rustfmt, `max_width = 80`).
+
+## Upgrading From 0.1
+
+0.2.0 tracks Rocket League v2.72/v2.76 Stats API changes and has breaking API changes. See [CHANGELOG.md](CHANGELOG.md) for the full list. In short:
+
+- `StatsEvent` is `#[non_exhaustive]` and has new variants; add a `_ =>` arm to exhaustive matches.
+- `StatsEvent::ReplayCreated` carries `ReplayCreatedData` (with `file_name`/`date`) instead of `MatchOnlyData`.
+- `MatchSignal::GoalScored` holds a `Box<GoalScoredData>`.
+- `ConnectionConfig` has a new `web_port` field, and `RlStatsError` has new `PortConflict` and `InvalidCommand` variants.
+
+## Binaries
+
+Binaries marked *dev tool* need `--features dev-tools`.
+
+### 1) Raw event dump (dev tool)
+
+```bash
+cargo run --features dev-tools --bin raw_events
 ```
 
 Optional INI path:
 
 ```bash
-cargo run --bin raw_events -- --ini /path/to/DefaultStatsAPI.ini
+cargo run --features dev-tools --bin raw_events -- --ini /path/to/TAStatsAPI.ini
 ```
 
-### 2) Compact tick listener
+### 2) Compact tick listener (dev tool)
 
 ```bash
-cargo run --bin tick_listener
+cargo run --features dev-tools --bin tick_listener
 ```
 
 ### 3) RL event listener with filters
@@ -57,13 +80,22 @@ cargo run --bin rl_events -- --list-events
 cargo run --bin rl_events -- --event goal
 ```
 
-### 4) Live player board (in-place console updates)
+### 4) Send a command to the game (dev tool)
 
 ```bash
-cargo run --bin player_board
+cargo run --features dev-tools --bin rl_command -- '{"Command":"SetMatchPaused","Data":{"bPaused":true}}'
+cargo run --features dev-tools --bin rl_command -- --help
 ```
 
-### 5) SOS websocket relay (outbound client)
+Validates the command locally, sends it over the stats socket, then prints non-tick events for a few seconds so you can confirm the effect.
+
+### 5) Live player board (in-place console updates, dev tool)
+
+```bash
+cargo run --features dev-tools --bin player_board
+```
+
+### 6) SOS websocket relay (outbound client)
 
 ```bash
 cargo run --bin sos_relay
@@ -81,7 +113,7 @@ Show all options:
 cargo run --bin sos_relay -- --help
 ```
 
-### 6) SOS websocket broadcast server (middleman)
+### 7) SOS websocket broadcast server (middleman)
 
 ```bash
 cargo run --bin sos_broadcast
@@ -109,7 +141,7 @@ Behavior note:
 - `sos_relay` pushes to a remote websocket endpoint.
 - `sos_broadcast` hosts the websocket endpoint and broadcasts to connected clients.
 
-### 7) SOS broadcaster GUI (desktop app)
+### 8) SOS broadcaster GUI (desktop app)
 
 ```bash
 cargo run --bin sos_broadcast_gui
@@ -124,6 +156,8 @@ Cross-platform desktop GUI (Linux and Windows) for the broadcaster flow:
 
 - If you do not pass an INI path, the client uses localhost defaults (`127.0.0.1:49123`) and does not edit an INI file.
 - If you pass `--ini <path>`, the INI file is created when missing and updated according to client options.
+- The game reads `<Install Dir>\TAGame\Config\TAStatsAPI.ini` and only falls back to `DefaultStatsAPI.ini` when it is missing. `discover_default_stats_api_ini_path()` checks them in that order, so point `--ini` at `TAStatsAPI.ini` if it exists, or edits to the fallback file are ignored.
+- `Port` and `WebPort` must differ; `prepare_connection_config` returns `RlStatsError::PortConflict` if they collide.
 
 Expected INI template:
 
@@ -133,9 +167,18 @@ Expected INI template:
 ; Port the client will listen for connections on
 Port=49123
 
+; Port the client will listen for WebSocket connections on (must differ from Port, 0 disables this feature)
+WebPort=49124
+
 ; How many times per second the game sends the update state (capped at 120, 0 disables this feature)
 PacketSendRate=60
 ```
+
+## Stats API Behavior Notes
+
+- **No-contest matches** (game v2.76+): `MatchEnded.WinnerTeamNum` is `-1`. Use `MatchEndedData::is_no_contest()`; the SOS `game:match_ended` payload carries `no_contest: true`.
+- **Goals during replays** (game v2.76+): `GoalScored` now also fires during replay playback and carries no replay flag. Check the latest `UpdateState` `Game.bReplay` if you count goals.
+- **Game v2.72 events**: `BoostPickup`, `PlayerJoined`, `PlayerLeft`, plus `ReplayCreated.FileName`/`Date`, `Player.Loadout`, `Player.PickupClass` and `Game.PlaylistId`.
 
 ## Python Bindings (PyO3)
 
@@ -152,6 +195,8 @@ Package metadata for Python builds is defined in `pyproject.toml`.
 Filtering helpers are exposed for Python users as well, including:
 
 - `RocketLeagueStatsClient.next_filtered_event_json(...)`
+- `RocketLeagueStatsClient.send_command_json('{"Command": "SetMatchPaused", "Data": {"bPaused": true}}')`
+- `rlstatsapi.list_command_names()`
 - `rlstatsapi.list_event_kinds()`
 - `rlstatsapi.event_matches(...)`
 - `rlstatsapi.filter_event_json(...)`
@@ -198,6 +243,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     Ok(())
 }
+```
+
+Sending a command:
+
+```rust
+use rlstatsapi::{Perspective, PovFocus, StatsCommand};
+
+client
+    .send_command(&StatsCommand::ChangePov {
+        focus: Some(PovFocus::Ball),
+        perspective: Some(Perspective::SoftAttach),
+    })
+    .await?;
 ```
 
 ## Automated Releases (GitHub)

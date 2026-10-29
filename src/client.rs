@@ -5,6 +5,7 @@ use tokio::net::TcpStream;
 use tokio::net::tcp::{OwnedReadHalf, OwnedWriteHalf};
 use tokio::time::{Duration, sleep};
 
+use crate::commands::StatsCommand;
 use crate::config::{
     ClientOptions, ConnectionConfig, prepare_connection_config,
 };
@@ -158,6 +159,17 @@ impl RocketLeagueStatsClient {
                 }
             },
         )
+    }
+
+    /// Validates and writes a command to the game over the stats socket.
+    pub async fn send_command(
+        &mut self,
+        command: &StatsCommand,
+    ) -> Result<(), RlStatsError> {
+        let payload = command.to_json()?;
+        self.writer.write_all(payload.as_bytes()).await?;
+        self.writer.flush().await?;
+        Ok(())
     }
 
     pub async fn close(mut self) -> Result<(), RlStatsError> {

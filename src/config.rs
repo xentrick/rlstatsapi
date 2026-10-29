@@ -5,9 +5,12 @@ use std::path::{Path, PathBuf};
 use crate::error::RlStatsError;
 
 pub const DEFAULT_PORT: u16 = 49123;
+pub const DEFAULT_WEB_PORT: u16 = 49124;
 pub const DEFAULT_PACKET_SEND_RATE: f32 = 60.0;
 pub const MAX_PACKET_SEND_RATE: f32 = 120.0;
-const DEFAULT_INI_TEMPLATE: &str = "[TAGame.MatchStatsExporter_TA]\n\n; Port the client will listen for connections on\nPort=49123\n\n; How many times per second the game sends the update state (capped at 120, 0 disables this feature)\nPacketSendRate=60\n";
+pub const STATS_API_INI_FILE: &str = "TAStatsAPI.ini";
+pub const STATS_API_INI_FALLBACK_FILE: &str = "DefaultStatsAPI.ini";
+const DEFAULT_INI_TEMPLATE: &str = "[TAGame.MatchStatsExporter_TA]\n\n; Port the client will listen for connections on\nPort=49123\n\n; Port the client will listen for WebSocket connections on (must differ from Port, 0 disables this feature)\nWebPort=49124\n\n; How many times per second the game sends the update state (capped at 120, 0 disables this feature)\nPacketSendRate=60\n";
 
 #[derive(Debug, Clone)]
 pub struct ClientOptions {
@@ -36,6 +39,7 @@ impl Default for ClientOptions {
 pub struct ConnectionConfig {
     pub host: String,
     pub port: u16,
+    pub web_port: u16,
     pub packet_send_rate: f32,
     pub ini_path: Option<PathBuf>,
     pub ini_mutated: bool,
@@ -52,6 +56,7 @@ pub fn prepare_connection_config(
 ) -> Result<ConnectionConfig, RlStatsError> {
     let ini_path = resolve_ini_path(options)?;
     let mut port = options.port_override.unwrap_or(DEFAULT_PORT);
+    let mut web_port = DEFAULT_WEB_PORT;
     let mut packet_send_rate = clamp_rate(options.packet_send_rate);
     let mut ini_mutated = false;
 
@@ -99,11 +104,20 @@ pub fn prepare_connection_config(
         if let Some(rate) = find_f32_value(&ini, "PacketSendRate") {
             packet_send_rate = clamp_rate(rate);
         }
+
+        if let Some(parsed_web_port) = find_u16_value(&ini, "WebPort") {
+            web_port = parsed_web_port;
+        }
+    }
+
+    if web_port != 0 && web_port == port {
+        return Err(RlStatsError::PortConflict { port });
     }
 
     Ok(ConnectionConfig {
         host: options.host.clone(),
         port,
+        web_port,
         packet_send_rate,
         ini_path,
         ini_mutated,
@@ -134,45 +148,58 @@ fn default_stats_api_ini_candidates() -> Vec<PathBuf> {
         candidates.push(PathBuf::from(from_env));
     }
 
+    let mut config_dirs = Vec::new();
+
     if let Ok(home) = env::var("HOME") {
         let home_path = PathBuf::from(home);
 
-        candidates.push(
-            home_path
-                .join(".local/share/Steam/steamapps/common/rocketleague/TAGame/Config/DefaultStatsAPI.ini"),
-        );
-        candidates.push(
-            home_path
-                .join(".steam/steam/steamapps/common/rocketleague/TAGame/Config/DefaultStatsAPI.ini"),
-        );
-        candidates.push(
+        config_dirs.push(home_path.join(
+            ".local/share/Steam/steamapps/common/rocketleague/TAGame/Config",
+        ));
+        config_dirs.push(
             home_path.join(
-                ".steam/steam/steamapps/compatdata/252950/pfx/drive_c/users/steamuser/Documents/My Games/Rocket League/TAGame/Config/DefaultStatsAPI.ini",
+                ".steam/steam/steamapps/common/rocketleague/TAGame/Config",
             ),
         );
+        config_dirs.push(home_path.join(
+            ".steam/steam/steamapps/compatdata/252950/pfx/drive_c/users/steamuser/Documents/My Games/Rocket League/TAGame/Config",
+        ));
     }
 
     if let Ok(program_files) = env::var("ProgramFiles") {
-        candidates.push(
-            PathBuf::from(program_files)
-                .join("Rocket League/TAGame/Config/DefaultStatsAPI.ini"),
+        config_dirs.push(
+            PathBuf::from(program_files).join("Rocket League/TAGame/Config"),
         );
     }
 
     if let Ok(program_files_x86) = env::var("ProgramFiles(x86)") {
-        candidates.push(
+        config_dirs.push(
             PathBuf::from(program_files_x86)
-                .join("Rocket League/TAGame/Config/DefaultStatsAPI.ini"),
+                .join("Rocket League/TAGame/Config"),
         );
     }
 
     if let Ok(app_data) = env::var("APPDATA") {
-        candidates.push(PathBuf::from(app_data).join(
-            "..\\Local\\Rocket League\\TAGame\\Config\\DefaultStatsAPI.ini",
-        ));
+        config_dirs.push(
+            PathBuf::from(app_data)
+                .join("..\\Local\\Rocket League\\TAGame\\Config"),
+        );
+    }
+
+    for dir in config_dirs {
+        candidates.extend(config_file_candidates(&dir));
     }
 
     candidates
+}
+
+// The game reads TAStatsAPI.ini and only falls back to DefaultStatsAPI.ini
+// when it is missing, so the override file must win.
+fn config_file_candidates(dir: &Path) -> [PathBuf; 2] {
+    [
+        dir.join(STATS_API_INI_FILE),
+        dir.join(STATS_API_INI_FALLBACK_FILE),
+    ]
 }
 
 fn ensure_ini_file_exists(path: &Path) -> Result<(), RlStatsError> {
@@ -291,4 +318,17 @@ fn split_key_value(line: &str) -> Option<(&str, &str, &str)> {
 
     let (lhs, rhs) = trimmed.split_once('=')?;
     Some((lhs.trim(), rhs.trim(), indent))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn prefers_ta_stats_api_ini_over_default() {
+        let [first, second] = config_file_candidates(Path::new("Config"));
+
+        assert_eq!(first, Path::new("Config").join("TAStatsAPI.ini"));
+        assert_eq!(second, Path::new("Config").join("DefaultStatsAPI.ini"));
+    }
 }

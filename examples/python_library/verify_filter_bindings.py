@@ -73,6 +73,9 @@ def main() -> None:
     kinds = rlstatsapi.list_event_kinds()
     assert "goal_scored" in kinds
     assert "match_ended" in kinds
+    assert {"boost_pickup", "player_joined", "player_left"} <= set(kinds)
+
+    assert "SetMatchPaused" in rlstatsapi.list_command_names()
 
     assert rlstatsapi.event_matches(GOAL_RAW, event_types=["goal"]) is True
     assert (

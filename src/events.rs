@@ -14,9 +14,11 @@ pub struct EventEnvelope<T = Value> {
 }
 
 #[derive(Debug, Clone)]
+#[non_exhaustive]
 pub enum StatsEvent {
     UpdateState(UpdateStateData),
     BallHit(BallHitData),
+    BoostPickup(BoostPickupData),
     ClockUpdatedSeconds(ClockUpdatedSecondsData),
     CountdownBegin(MatchOnlyData),
     CrossbarHit(CrossbarHitData),
@@ -30,8 +32,10 @@ pub enum StatsEvent {
     MatchEnded(MatchEndedData),
     MatchPaused(MatchOnlyData),
     MatchUnpaused(MatchOnlyData),
+    PlayerJoined(PlayerPresenceData),
+    PlayerLeft(PlayerPresenceData),
     PodiumStart(MatchOnlyData),
-    ReplayCreated(MatchOnlyData),
+    ReplayCreated(ReplayCreatedData),
     RoundStarted(MatchOnlyData),
     StatfeedEvent(StatfeedEventData),
     Unknown(UnknownEvent),
@@ -47,6 +51,7 @@ pub fn stats_event_name(event: &StatsEvent) -> &'static str {
     match event {
         StatsEvent::UpdateState(_) => "UpdateState",
         StatsEvent::BallHit(_) => "BallHit",
+        StatsEvent::BoostPickup(_) => "BoostPickup",
         StatsEvent::ClockUpdatedSeconds(_) => "ClockUpdatedSeconds",
         StatsEvent::CountdownBegin(_) => "CountdownBegin",
         StatsEvent::CrossbarHit(_) => "CrossbarHit",
@@ -60,6 +65,8 @@ pub fn stats_event_name(event: &StatsEvent) -> &'static str {
         StatsEvent::MatchEnded(_) => "MatchEnded",
         StatsEvent::MatchPaused(_) => "MatchPaused",
         StatsEvent::MatchUnpaused(_) => "MatchUnpaused",
+        StatsEvent::PlayerJoined(_) => "PlayerJoined",
+        StatsEvent::PlayerLeft(_) => "PlayerLeft",
         StatsEvent::PodiumStart(_) => "PodiumStart",
         StatsEvent::ReplayCreated(_) => "ReplayCreated",
         StatsEvent::RoundStarted(_) => "RoundStarted",
@@ -87,6 +94,9 @@ pub fn stats_event_to_value(event: &StatsEvent) -> Result<Value, RlStatsError> {
         }
         StatsEvent::BallHit(data) => {
             json!({"event": "BallHit", "data": data})
+        }
+        StatsEvent::BoostPickup(data) => {
+            json!({"event": "BoostPickup", "data": data})
         }
         StatsEvent::ClockUpdatedSeconds(data) => {
             json!({"event": "ClockUpdatedSeconds", "data": data})
@@ -126,6 +136,12 @@ pub fn stats_event_to_value(event: &StatsEvent) -> Result<Value, RlStatsError> {
         }
         StatsEvent::MatchUnpaused(data) => {
             json!({"event": "MatchUnpaused", "data": data})
+        }
+        StatsEvent::PlayerJoined(data) => {
+            json!({"event": "PlayerJoined", "data": data})
+        }
+        StatsEvent::PlayerLeft(data) => {
+            json!({"event": "PlayerLeft", "data": data})
         }
         StatsEvent::PodiumStart(data) => {
             json!({"event": "PodiumStart", "data": data})
@@ -168,6 +184,7 @@ fn parse_event_envelope(
     let event = match envelope.event.as_str() {
         "UpdateState" => StatsEvent::UpdateState(serde_json::from_value(data)?),
         "BallHit" => StatsEvent::BallHit(serde_json::from_value(data)?),
+        "BoostPickup" => StatsEvent::BoostPickup(serde_json::from_value(data)?),
         "ClockUpdatedSeconds" => {
             StatsEvent::ClockUpdatedSeconds(serde_json::from_value(data)?)
         }
@@ -199,6 +216,10 @@ fn parse_event_envelope(
         "MatchUnpaused" => {
             StatsEvent::MatchUnpaused(serde_json::from_value(data)?)
         }
+        "PlayerJoined" => {
+            StatsEvent::PlayerJoined(serde_json::from_value(data)?)
+        }
+        "PlayerLeft" => StatsEvent::PlayerLeft(serde_json::from_value(data)?),
         "PodiumStart" => StatsEvent::PodiumStart(serde_json::from_value(data)?),
         "ReplayCreated" => {
             StatsEvent::ReplayCreated(serde_json::from_value(data)?)
@@ -293,6 +314,24 @@ pub struct BallHitData {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct BoostPickupData {
+    #[serde(rename = "MatchGuid", default)]
+    pub match_guid: Option<String>,
+    #[serde(rename = "Player", default)]
+    pub player: PlayerRef,
+    #[serde(rename = "Location", default)]
+    pub location: Vector3,
+    #[serde(rename = "BoostAmount", default)]
+    pub boost_amount: f64,
+    #[serde(rename = "BoostType", default)]
+    pub boost_type: String,
+    #[serde(rename = "bReplay", default)]
+    pub b_replay: bool,
+    #[serde(flatten)]
+    pub extra: HashMap<String, Value>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ClockUpdatedSecondsData {
     #[serde(rename = "MatchGuid", default)]
     pub match_guid: Option<String>,
@@ -350,6 +389,38 @@ pub struct MatchEndedData {
     pub extra: HashMap<String, Value>,
 }
 
+impl MatchEndedData {
+    /// Since v2.76 the game reports `WinnerTeamNum = -1` when a match ends
+    /// without a winner.
+    pub fn is_no_contest(&self) -> bool {
+        self.winner_team_num < 0
+    }
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct PlayerPresenceData {
+    #[serde(rename = "MatchGuid", default)]
+    pub match_guid: Option<String>,
+    #[serde(rename = "PlayerName", default)]
+    pub player_name: String,
+    #[serde(rename = "PrimaryId", default)]
+    pub primary_id: String,
+    #[serde(flatten)]
+    pub extra: HashMap<String, Value>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct ReplayCreatedData {
+    #[serde(rename = "MatchGuid", default)]
+    pub match_guid: Option<String>,
+    #[serde(rename = "FileName", default)]
+    pub file_name: String,
+    #[serde(rename = "Date", default)]
+    pub date: String,
+    #[serde(flatten)]
+    pub extra: HashMap<String, Value>,
+}
+
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct StatfeedEventData {
     #[serde(rename = "MatchGuid", default)]
@@ -396,6 +467,8 @@ pub struct BallState {
 pub struct UpdateStateGame {
     #[serde(rename = "Teams", default)]
     pub teams: Vec<TeamState>,
+    #[serde(rename = "PlaylistId", default)]
+    pub playlist_id: Option<i64>,
     #[serde(rename = "TimeSeconds", default)]
     pub time_seconds: Option<i64>,
     #[serde(rename = "bOvertime", default)]
@@ -448,6 +521,8 @@ pub struct UpdateStatePlayer {
     pub car_touches: Option<i64>,
     #[serde(rename = "Demos", default)]
     pub demos: Option<i64>,
+    #[serde(rename = "Loadout", default)]
+    pub loadout: Option<Vec<String>>,
     #[serde(rename = "bHasCar", default)]
     pub b_has_car: Option<bool>,
     #[serde(rename = "Speed", default)]
@@ -466,6 +541,8 @@ pub struct UpdateStatePlayer {
     pub b_demolished: Option<bool>,
     #[serde(rename = "bSupersonic", default)]
     pub b_supersonic: Option<bool>,
+    #[serde(rename = "PickupClass", default)]
+    pub pickup_class: Option<String>,
     #[serde(rename = "Attacker", default)]
     pub attacker: Option<PlayerRef>,
     #[serde(flatten)]
